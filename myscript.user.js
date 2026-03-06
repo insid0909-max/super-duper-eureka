@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         강력한 복사 제한 해제 (지혁님 전용)
+// @name         강력한 복사 제한 해제
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  우클릭, 드래그, 선택 제한을 모두 해제합니다.
