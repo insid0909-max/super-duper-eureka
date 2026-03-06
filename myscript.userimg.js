@@ -1,39 +1,43 @@
 // ==UserScript==
-// @name         통합 우클릭 해제 (안정화 v4.2)
+// @name         Webtoon Image Optimizer
 // @namespace    http://tampermonkey.net/
-// @version      4.2
-// @description  개인 정보 제거 및 성능 최적화 버전
-// @author       UserScript
+// @version      1.1
+// @description  웹툰 및 이미지 사이트 로딩 최적화 (Lazy Load & Async Decoding)
 // @match        *://*/*
-// @exclude      *://*.bank.*
-// @exclude      *://*.card.*
 // @grant        none
-// @run-at       document-end
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    const events = ['contextmenu', 'copy', 'selectstart', 'dragstart'];
-    const handler = (e) => { e.stopPropagation(); };
+    const optimizeImage = (img) => {
+        if (!img.src || img.dataset.optimized) return;
 
-    events.forEach(event => {
-        document.addEventListener(event, handler, false);
-    });
+        // 비동기 디코딩 및 지연 로딩 강제 적용
+        img.decoding = 'async';
+        img.loading = 'lazy';
 
-    const unlockCSS = () => {
-        if (document.getElementById('unlock-css-clean')) return;
-        const style = document.createElement('style');
-        style.id = 'unlock-css-clean';
-        style.innerHTML = `
-            * {
-                -webkit-user-select: text !important;
-                user-select: text !important;
-                -webkit-touch-callout: default !important;
-            }
-        `;
-        document.documentElement.appendChild(style);
+        // 레이아웃 시프트 방지
+        if (!img.style.minHeight) {
+            img.style.minHeight = '100px';
+        }
+
+        img.dataset.optimized = 'true';
     };
 
-    window.addEventListener('load', unlockCSS);
+    const runOptimization = () => {
+        document.querySelectorAll('img').forEach(optimizeImage);
+    };
+
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                if (node.tagName === 'IMG') optimizeImage(node);
+                else if (node.querySelectorAll) node.querySelectorAll('img').forEach(optimizeImage);
+            });
+        });
+    });
+
+    runOptimization();
+    observer.observe(document.body, { childList: true, subtree: true });
 })();
