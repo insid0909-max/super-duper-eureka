@@ -1,10 +1,11 @@
 [Adblock Plus 2.0]
-! Title: My Custom Adblock Filters
+! Title: 지혁's 통합 광고 차단 필터
 ! Last Modified: 2026-03-07
-! Expires: 4 days
+! Version: 1.2
 ! --------------------------------------------------
 
-! XToon 시리즈 (도메인 숫자 가변 대응)
+! === [1. 웹툰/커뮤니티 전용 규칙] ===
+! XToon 시리즈 및 유사 도메인 대응
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
 t1.xtoon365.com##.pb-60.chapter-ad.w-100
 t1.xtoon365.com##.chapter-ad.pt-60.w-100
@@ -14,48 +15,36 @@ t2.xtoon*.com##.pb-60.chapter-ad.w-100
 t2.xtoon*.com##[href^="http://www.qkc709.com?"]
 t2.xtoon2.com##div.view-main.d-flex:nth-of-type(5) > div.chapter-ad:nth-of-type(1)
 
-! 주소모아 (Wix 기반 레이아웃 대응)
+! 툰브로(Toon Bro) - 스크롤 복구 및 광고 차단
+toon-bro.*##html, body:style(overflow: auto !important; height: auto !important; position: static !important;)
+toon-bro.*##[class*="modal"], [class*="backdrop"], [class*="popup"]
+toon-bro.*##.banner-ad, [id^="ad-"], [class^="ad-"], .fixed-bottom
+
+! 주소모아 (Wix 기반)
 joosomoa1.com###SITE_HEADER > .kn76TK
 joosomoa1.com###comp-m0nr7j13 > .Exmq9 > div.TmK0x > div._FiCX
 joosomoa1.com##[src^="https://static.wixstatic.com/media/"]
 
-! 보배링크 & 뉴토끼 & 쿡마나
-newtoki469.com##.cursor.to-show
-bobaelink86.xyz##div.col-xs-13
-bobaelink86.xyz##div.col-md-4
-bobaelink86.xyz##[src^="images/ad/ad.gif"]
-bobaelink86.xyz##[src^="https://images2.imgbox.com/"]
-cookmana49.com##.four.b_item.grid_gap_5.gridArea > span
-
-! 펀비 & 조아툰 & MZG툰
+! 기타 웹툰 사이트 (와일드카드 적용)
+newtoki*.com##.cursor.to-show
+bobaelink*.xyz##div.col-xs-13, div.col-md-4
+bobaelink*.xyz##[src^="images/ad/ad.gif"], [src^="https://images2.imgbox.com/"]
+cookmana*.com##.four.b_item.grid_gap_5.gridArea > span
 funbe*.com##div.mobile-banner:nth-of-type(2) > div:nth-of-type(3) > a > img
-joatoon*.com##.py-5.px-4.z-10
-joatoon*.com###thepage > div:nth-of-type(1)
-joatoon*.com##.object-cover
+joatoon*.com##.py-5.px-4.z-10, #thepage > div:nth-of-type(1), .object-cover
 *.mzgtoon.com##[src^="/_next/image?"]
-! --- 범용 광고 및 레이아웃 최적화 ---
 
-! 특정 도메인에 상관없이 'ad'가 포함된 배너 영역 차단
+! === [2. 공통 적용 범용 규칙] ===
 ##.ad-banner
 ##.ad_banner
 ##[class*="ad-container"]
 ##[id*="ad-container"]
-
-! 하단 고정형(Floating) 광고 바 제거 (주로 모바일)
 ##div[class*="fixed-bottom"]
 ##div[class*="floating-ad"]
-##.mobile-bottom-ad
-
-! 성인/도박 광고 이미지 차단 (일반적인 패턴)
-##[src*="casino"]
-##[src*="slot"]
-##[src*="totosite"]
-
-! 비어 있는 광고 박스 숨기기 (공백 제거)
+##[src*="casino"], [src*="slot"], [src*="totosite"]
 ##.ad-placeholder
 ##div:empty:not(html):not(body):not(script):not(style)
 
-! 이미지 로딩 속도 개선 및 트래커 차단 (필요시)
+! === [3. 네트워크 차단 (트래커)] ===
 ||googletagservices.com^
 ||googlesyndication.com^
-
