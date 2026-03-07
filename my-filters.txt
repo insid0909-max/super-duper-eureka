@@ -33,3 +33,29 @@ joatoon*.com##.py-5.px-4.z-10
 joatoon*.com###thepage > div:nth-of-type(1)
 joatoon*.com##.object-cover
 *.mzgtoon.com##[src^="/_next/image?"]
+! --- 범용 광고 및 레이아웃 최적화 ---
+
+! 특정 도메인에 상관없이 'ad'가 포함된 배너 영역 차단
+##.ad-banner
+##.ad_banner
+##[class*="ad-container"]
+##[id*="ad-container"]
+
+! 하단 고정형(Floating) 광고 바 제거 (주로 모바일)
+##div[class*="fixed-bottom"]
+##div[class*="floating-ad"]
+##.mobile-bottom-ad
+
+! 성인/도박 광고 이미지 차단 (일반적인 패턴)
+##[src*="casino"]
+##[src*="slot"]
+##[src*="totosite"]
+
+! 비어 있는 광고 박스 숨기기 (공백 제거)
+##.ad-placeholder
+##div:empty:not(html):not(body):not(script):not(style)
+
+! 이미지 로딩 속도 개선 및 트래커 차단 (필요시)
+||googletagservices.com^
+||googlesyndication.com^
+
