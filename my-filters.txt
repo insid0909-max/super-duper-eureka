@@ -1,0 +1,35 @@
+[Adblock Plus 2.0]
+! Title: My Custom Adblock Filters
+! Last Modified: 2026-03-07
+! Expires: 4 days
+! --------------------------------------------------
+
+! XToon 시리즈 (도메인 숫자 가변 대응)
+t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
+t1.xtoon365.com##.pb-60.chapter-ad.w-100
+t1.xtoon365.com##.chapter-ad.pt-60.w-100
+t1.xtoon365.com##[href^="http://www.qkc709.com?"]
+t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
+t2.xtoon*.com##.pb-60.chapter-ad.w-100
+t2.xtoon*.com##[href^="http://www.qkc709.com?"]
+t2.xtoon2.com##div.view-main.d-flex:nth-of-type(5) > div.chapter-ad:nth-of-type(1)
+
+! 주소모아 (Wix 기반 레이아웃 대응)
+joosomoa1.com###SITE_HEADER > .kn76TK
+joosomoa1.com###comp-m0nr7j13 > .Exmq9 > div.TmK0x > div._FiCX
+joosomoa1.com##[src^="https://static.wixstatic.com/media/"]
+
+! 보배링크 & 뉴토끼 & 쿡마나
+newtoki469.com##.cursor.to-show
+bobaelink86.xyz##div.col-xs-13
+bobaelink86.xyz##div.col-md-4
+bobaelink86.xyz##[src^="images/ad/ad.gif"]
+bobaelink86.xyz##[src^="https://images2.imgbox.com/"]
+cookmana49.com##.four.b_item.grid_gap_5.gridArea > span
+
+! 펀비 & 조아툰 & MZG툰
+funbe*.com##div.mobile-banner:nth-of-type(2) > div:nth-of-type(3) > a > img
+joatoon*.com##.py-5.px-4.z-10
+joatoon*.com###thepage > div:nth-of-type(1)
+joatoon*.com##.object-cover
+*.mzgtoon.com##[src^="/_next/image?"]
