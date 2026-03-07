@@ -1,11 +1,11 @@
 [Adblock Plus 2.0]
-! Title: 지혁's 통합 광고 차단 필터
+! Title: Custom Adblock Filters
 ! Last Modified: 2026-03-07
-! Version: 1.2
+! Version: 1.4
 ! --------------------------------------------------
 
 ! === [1. 웹툰/커뮤니티 전용 규칙] ===
-! XToon 시리즈 및 유사 도메인 대응
+! XToon 시리즈 (도메인 숫자 가변 대응)
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
 t1.xtoon365.com##.pb-60.chapter-ad.w-100
 t1.xtoon365.com##.chapter-ad.pt-60.w-100
@@ -20,12 +20,18 @@ toon-bro.*##html, body:style(overflow: auto !important; height: auto !important;
 toon-bro.*##[class*="modal"], [class*="backdrop"], [class*="popup"]
 toon-bro.*##.banner-ad, [id^="ad-"], [class^="ad-"], .fixed-bottom
 
+! 야툰(Yatoon) 시리즈 최적화
+yatoon*.com##div.pad.col-6.col-md-4
+yatoon*.com##[src*="/ban/banner/"]
+yatoon*.com##[href*="qkc709.com"]
+yatoon*.com##div[style*="z-index: 9999"]
+
 ! 주소모아 (Wix 기반)
 joosomoa1.com###SITE_HEADER > .kn76TK
 joosomoa1.com###comp-m0nr7j13 > .Exmq9 > div.TmK0x > div._FiCX
 joosomoa1.com##[src^="https://static.wixstatic.com/media/"]
 
-! 기타 웹툰 사이트 (와일드카드 적용)
+! 기타 주요 웹툰 사이트 가변 대응
 newtoki*.com##.cursor.to-show
 bobaelink*.xyz##div.col-xs-13, div.col-md-4
 bobaelink*.xyz##[src^="images/ad/ad.gif"], [src^="https://images2.imgbox.com/"]
@@ -45,6 +51,6 @@ joatoon*.com##.py-5.px-4.z-10, #thepage > div:nth-of-type(1), .object-cover
 ##.ad-placeholder
 ##div:empty:not(html):not(body):not(script):not(style)
 
-! === [3. 네트워크 차단 (트래커)] ===
+! === [3. 네트워크 차단 및 트래커] ===
 ||googletagservices.com^
 ||googlesyndication.com^
