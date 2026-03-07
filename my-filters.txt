@@ -1,69 +1,56 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters
-! Last Modified: 2026-03-07
-! Version: 1.4
+! Title: Custom Adblock Filters (Integrated)
+! Last Modified: 2026-03-08
+! Version: 1.5
 ! --------------------------------------------------
 
-! === [1. 웹툰/커뮤니티 전용 규칙] ===
-! XToon 시리즈 (도메인 숫자 가변 대응)
+! === [1. 뽐뿌 모바일(m.ppomppu.co.kr) 최적화] ===
+! 상단 빨간색 메뉴바 고정 해제 (스크롤 시 본문 가림 방지)
+m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
+m.ppomppu.co.kr##.sub_title:style(position: absolute !important;)
+m.ppomppu.co.kr##.header:style(position: absolute !important;)
+
+! 게시글 본문 영역 여백 보정
+m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
+m.ppomppu.co.kr##.contents:style(margin-top: 0px !important; padding-top: 5px !important;)
+
+! 게시글 내 텍스트 광고(법률상담 등) 및 배너 제거
+m.ppomppu.co.kr##.banner_area
+m.ppomppu.co.kr##.footer_ad
+m.ppomppu.co.kr##[id^="div-gpt-ad"]
+m.ppomppu.co.kr##.bottom_fix_ad
+m.ppomppu.co.kr##.board_view_ad
+m.ppomppu.co.kr##.view_ad_title
+
+! === [2. 웹툰 및 커뮤니티 전용 규칙] ===
+! XToon 시리즈
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
 t1.xtoon365.com##.pb-60.chapter-ad.w-100
-t1.xtoon365.com##.chapter-ad.pt-60.w-100
-t1.xtoon365.com##[href^="http://www.qkc709.com?"]
 t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
-t2.xtoon*.com##.pb-60.chapter-ad.w-100
-t2.xtoon*.com##[href^="http://www.qkc709.com?"]
-t2.xtoon2.com##div.view-main.d-flex:nth-of-type(5) > div.chapter-ad:nth-of-type(1)
 
 ! 툰브로(Toon Bro) - 스크롤 복구 및 광고 차단
 toon-bro.*##html, body:style(overflow: auto !important; height: auto !important; position: static !important;)
 toon-bro.*##[class*="modal"], [class*="backdrop"], [class*="popup"]
 toon-bro.*##.banner-ad, [id^="ad-"], [class^="ad-"], .fixed-bottom
 
-! 야툰(Yatoon) 시리즈 최적화
+! 야툰(Yatoon) 및 기타 사이트 가변 대응
 yatoon*.com##div.pad.col-6.col-md-4
 yatoon*.com##[src*="/ban/banner/"]
 yatoon*.com##[href*="qkc709.com"]
-yatoon*.com##div[style*="z-index: 9999"]
-
-! 주소모아 (Wix 기반)
-joosomoa1.com###SITE_HEADER > .kn76TK
-joosomoa1.com###comp-m0nr7j13 > .Exmq9 > div.TmK0x > div._FiCX
-joosomoa1.com##[src^="https://static.wixstatic.com/media/"]
-
-! 기타 주요 웹툰 사이트 가변 대응
 newtoki*.com##.cursor.to-show
-bobaelink*.xyz##div.col-xs-13, div.col-md-4
-bobaelink*.xyz##[src^="images/ad/ad.gif"], [src^="https://images2.imgbox.com/"]
-cookmana*.com##.four.b_item.grid_gap_5.gridArea > span
 funbe*.com##div.mobile-banner:nth-of-type(2) > div:nth-of-type(3) > a > img
-joatoon*.com##.py-5.px-4.z-10, #thepage > div:nth-of-type(1), .object-cover
-*.mzgtoon.com##[src^="/_next/image?"]
+joatoon*.com##.py-5.px-4.z-10, .object-cover
 
-! === [2. 공통 적용 범용 규칙] ===
+! === [3. 공통 범용 및 네트워크 차단] ===
 ##.ad-banner
 ##.ad_banner
 ##[class*="ad-container"]
-##[id*="ad-container"]
-##div[class*="fixed-bottom"]
-##div[class*="floating-ad"]
 ##[src*="casino"], [src*="slot"], [src*="totosite"]
-##.ad-placeholder
-##div:empty:not(html):not(body):not(script):not(style)
-
-! === [3. 네트워크 차단 및 트래커] ===
 ||googletagservices.com^
 ||googlesyndication.com^
 
-! --- 뽐뿌(Ppompupu) 모바일 서브 헤더 최적화 ---
-
-! 1. 빨간색 표시된 네비게이션 바 고정 해제 (스크롤 시 위로 올라감)
-m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
-m.ppomppu.co.kr##.sub_title:style(position: absolute !important;)
-
-! 2. 만약 해당 바를 아예 숨기고 싶다면 아래 규칙 사용 (선택 사항)
-! m.ppomppu.co.kr##.top_nav_wrap:style(display: none !important;)
-
-! 3. 본문 영역이 가려지지 않도록 상단 여백 보정
-m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
-m.ppomppu.co.kr##.contents:style(margin-top: 0px !important;)
+! 웹툰 이미지 서버 예외 허용 (로딩 방해 방지)
+@@||st.kakaocdn.net^
+@@||navercp.com^
+@@||imgbox.com^
+@@/wp-content/uploads/
