@@ -55,18 +55,15 @@ joatoon*.com##.py-5.px-4.z-10, #thepage > div:nth-of-type(1), .object-cover
 ||googletagservices.com^
 ||googlesyndication.com^
 
-! --- 뽐뿌(Ppompupu) 모바일 상단 바 가림 및 광고 제거 ---
+! --- 뽐뿌(Ppompupu) 모바일 서브 헤더 최적화 ---
 
-! 1. 상단 타이틀 바 고정 해제 (화면 가림 방지)
-m.ppomppu.co.kr##.header:style(position: absolute !important;)
-m.ppomppu.co.kr##.top_nav:style(position: absolute !important; top: 50px !important;)
+! 1. 빨간색 표시된 네비게이션 바 고정 해제 (스크롤 시 위로 올라감)
+m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
+m.ppomppu.co.kr##.sub_title:style(position: absolute !important;)
 
-! 2. 본문 영역이 상단 바에 가려지지 않도록 여백 조정
-m.ppomppu.co.kr##.contents:style(padding-top: 0px !important;)
+! 2. 만약 해당 바를 아예 숨기고 싶다면 아래 규칙 사용 (선택 사항)
+! m.ppomppu.co.kr##.top_nav_wrap:style(display: none !important;)
 
-! 3. 뽐뿌 모바일 내 불필요한 광고 및 배너 제거
-m.ppomppu.co.kr##.banner_area
-m.ppomppu.co.kr##.footer_ad
-m.ppomppu.co.kr##[id^="div-gpt-ad"]
-m.ppomppu.co.kr##.bottom_fix_ad
-
+! 3. 본문 영역이 가려지지 않도록 상단 여백 보정
+m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
+m.ppomppu.co.kr##.contents:style(margin-top: 0px !important;)
