@@ -1,20 +1,15 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated)
+! Title: Custom Adblock Filters (Integrated & Refined)
 ! Last Modified: 2026-03-08
-! Version: 1.6
+! Version: 1.7
 ! --------------------------------------------------
 
 ! === [1. 뽐뿌 모바일(m.ppomppu.co.kr) 최적화] ===
-! 상단 빨간색 메뉴바 고정 해제 (스크롤 시 본문 가림 방지)
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
 m.ppomppu.co.kr##.sub_title:style(position: absolute !important;)
 m.ppomppu.co.kr##.header:style(position: absolute !important;)
-
-! 게시글 본문 영역 여백 보정
 m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
 m.ppomppu.co.kr##.contents:style(margin-top: 0px !important; padding-top: 5px !important;)
-
-! 게시글 내 텍스트 광고(법률상담 등) 및 배너 제거
 m.ppomppu.co.kr##.banner_area
 m.ppomppu.co.kr##.footer_ad
 m.ppomppu.co.kr##[id^="div-gpt-ad"]
@@ -23,14 +18,13 @@ m.ppomppu.co.kr##.board_view_ad
 m.ppomppu.co.kr##.view_ad_title
 
 ! === [2. 웹툰 및 커뮤니티 전용 규칙] ===
-! 주소모아(Joosomoa) - 상단 랭킹 광고 및 메인 배너
-joosomoa*.com##.banner-item
-joosomoa*.com##.main-banner
-joosomoa*.com##.top-banner
-joosomoa*.com##[class*="banner-wrap"]
-joosomoa*.com##.flex.justify-center.items-center.my-4
-joosomoa*.com##div[style*="z-index: 9999"]
-joosomoa*.com##.max-w-screen-xl.mx-auto.px-4.py-2 > div.grid
+! 주소모아(Joosomoa) - 상단 랭킹 및 메인 그리드 광고 정밀 차단
+joosomoa*.com##.max-w-screen-xl.mx-auto.px-4.py-2 > div.grid > a
+joosomoa*.com##.max-w-screen-xl.mx-auto.px-4.py-2 > div.grid > div:has(img)
+joosomoa*.com##div[class*="flex"][class*="justify-center"]:has(a[href*="http"])
+joosomoa*.com##div:has(> a > img[src*=".gif"])
+joosomoa*.com##div:has(> a > img[src*="data:image"])
+joosomoa*.com##.z-10.w-full.bg-white:style(position: static !important;)
 
 ! XToon 시리즈
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
@@ -42,7 +36,7 @@ toon-bro.*##html, body:style(overflow: auto !important; height: auto !important;
 toon-bro.*##[class*="modal"], [class*="backdrop"], [class*="popup"]
 toon-bro.*##.banner-ad, [id^="ad-"], [class^="ad-"], .fixed-bottom
 
-! 야툰(Yatoon) 및 기타 사이트 가변 대응
+! 야툰(Yatoon) 및 기타 가변 사이트
 yatoon*.com##div.pad.col-6.col-md-4
 yatoon*.com##[src*="/ban/banner/"]
 yatoon*.com##[href*="qkc709.com"]
@@ -58,7 +52,7 @@ joatoon*.com##.py-5.px-4.z-10, .object-cover
 ||googletagservices.com^
 ||googlesyndication.com^
 
-! 웹툰 이미지 서버 예외 허용 (로딩 방해 방지)
+! 웹툰 이미지 서버 예외 허용
 @@||st.kakaocdn.net^
 @@||navercp.com^
 @@||imgbox.com^
