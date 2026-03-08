@@ -1,26 +1,27 @@
 [Adblock Plus 2.0]
-! Title: Ultimate Structural Master Filter (v3.1 Automatic)
+! Title: Ultimate Structural Master Filter (Paid Tier Optimized)
 ! Last Modified: 2026-03-08
-! Version: 3.1
+! Version: 3.2
 ! --------------------------------------------------
 
-! === [1. Wix 및 유사 구조 사이트 원천 차단 (주소모아/링크365 공통)] ===
-! 광고 이미지가 포함된 최상단 섹션 및 플로팅 배너 제거
+! === [1. Wix 엔진 기반 사이트 지능형 자동 대응] ===
+! 광고가 포함된 첫 섹션과 빈 컨테이너를 물리적으로 제거
 *##section[data-testid="page-section"]:first-of-type:has(img)
-*##section:has(div[class*="banner"]), *##section:has(div[id*="banner"])
+*##section[data-content-summary*="광고"], *##section:has(div[class*="banner"])
 *##div[id^="comp-"]:has(img[src*="wixstatic"]):not(:has(span))
+*##div[data-testid="mesh-container-content"] > div:first-child:has(img)
 
-! 윅스 미디어 서버 광고 이미지 원천 봉쇄 (본문 아이콘 제외)
+! 광고 미디어 서버(Wixstatic) 이미지 차단 (본문 아이콘 크기 제외 정밀화)
 *##[src^="https://static.wixstatic.com/media/"]:not([width="40"]):not([width="50"])
 *##div[data-testid="linkElement"]:has(img[src*=".gif"])
 *##div[data-testid="linkElement"]:has(img[src*="data:image"])
 
-! 상단 검은 공백 및 레이아웃 파괴 요소 강제 제거 (화면 밀착)
-*##header#SITE_HEADER:style(display: none !important; height: 0px !important;)
+! 상단 시커먼 공백(Header) 및 레이아웃 여백 강제 제거 (V3.2 보정)
+*##header#SITE_HEADER:style(display: none !important; height: 0px !important; visibility: hidden !important;)
 *##main#PAGES_CONTAINER:style(padding-top: 0px !important; margin-top: 0px !important;)
-*##div[data-testid="mesh-container-content"] > div:first-child:has(img):style(display: none !important;)
+*##div#SITE_BACKGROUND:style(top: 0px !important;)
 
-! [안전 장치] 텍스트가 포함된 진짜 목록은 철저히 보호 (화이트리스트)
+! [안전 장치] 텍스트가 있는 목록은 절대 차단 금지 (오진 방지)
 @@||*##div[data-testid="linkElement"]:has(span)
 @@||*##section[data-testid="page-section"]:nth-of-type(n+2)
 
@@ -30,7 +31,7 @@ m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
 newtoki*.com##.cursor.to-show
 
-! === [3. 네트워크 레벨 범용 차단 (도박, 성인, 트래커)] ===
+! === [3. 범용 네트워크 및 성인/도박 배너 차단] ===
 ##.ad-banner
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
