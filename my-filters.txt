@@ -1,60 +1,36 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Wix-based Joosomoa Integrated)
+! Title: Custom Adblock Filters (Content Recovery)
 ! Last Modified: 2026-03-08
-! Version: 1.8
+! Version: 1.9
 ! --------------------------------------------------
 
-! === [1. 뽐뿌 모바일(m.ppomppu.co.kr) 최적화] ===
+! === [1. 뽐뿌 모바일 최적화 (유지)] ===
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
-m.ppomppu.co.kr##.sub_title:style(position: absolute !important;)
-m.ppomppu.co.kr##.header:style(position: absolute !important;)
 m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
 m.ppomppu.co.kr##.contents:style(margin-top: 0px !important; padding-top: 5px !important;)
 m.ppomppu.co.kr##.banner_area
-m.ppomppu.co.kr##.footer_ad
 m.ppomppu.co.kr##[id^="div-gpt-ad"]
-m.ppomppu.co.kr##.bottom_fix_ad
-m.ppomppu.co.kr##.board_view_ad
-m.ppomppu.co.kr##.view_ad_title
 
-! === [2. 웹툰 및 커뮤니티 전용 규칙] ===
-! 주소모아(Joosomoa) - Wix 기반 원천 차단 규칙
-joosomoa*.com###SITE_HEADER
-joosomoa*.com###comp-m0nr7j13
-joosomoa*.com##[src^="https://static.wixstatic.com/media/"]
-joosomoa*.com##div[id^="comp-"]:has(img[src*="wixstatic"])
+! === [2. 주소모아(Joosomoa) 콘텐츠 복구 및 정밀 차단] ===
+! (주의) SITE_HEADER 및 comp- ID 직접 차단 해제하여 본문 복구
+! 대신 '이미지 소스'와 '광고 전용 클래스'만 정밀 타격합니다.
+
+! Wix 미디어 광고 이미지만 원천 차단 (본문 아이콘 제외 방어)
+joosomoa*.com##[src^="https://static.wixstatic.com/media/"]:not([width="40"]):not([width="50"])
+joosomoa*.com##div[data-testid="linkElement"] > a[href*="http"]:has(img[src*="wixstatic"])
+
+! 상단 가변형 배너 영역만 제거 (본문 그리드와 구분)
+joosomoa*.com##section:has(img[src*=".gif"])
+joosomoa*.com##div[style*="z-index: 9999"]
 joosomoa*.com##.Exmq9 > div.TmK0x > div._FiCX
-joosomoa*.com##[class*="WixAds"]
-joosomoa*.com##[id^="WIX_ADS"]
 
-! XToon 시리즈
+! === [3. 기타 웹툰 및 커뮤니티 규칙 (기존 유지)] ===
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
-t1.xtoon365.com##.pb-60.chapter-ad.w-100
-t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
-
-! 툰브로(Toon Bro) - 스크롤 복구 및 광고 차단
 toon-bro.*##html, body:style(overflow: auto !important; height: auto !important; position: static !important;)
-toon-bro.*##[class*="modal"], [class*="backdrop"], [class*="popup"]
-toon-bro.*##.banner-ad, [id^="ad-"], [class^="ad-"], .fixed-bottom
-
-! 야툰(Yatoon) 및 기타 가변 사이트
-yatoon*.com##div.pad.col-6.col-md-4
 yatoon*.com##[src*="/ban/banner/"]
-yatoon*.com##[href*="qkc709.com"]
 newtoki*.com##.cursor.to-show
-funbe*.com##div.mobile-banner:nth-of-type(2) > div:nth-of-type(3) > a > img
-joatoon*.com##.py-5.px-4.z-10, .object-cover
 
-! === [3. 공통 범용 및 네트워크 차단] ===
+! === [4. 공통 범용 차단] ===
 ##.ad-banner
-##.ad_banner
-##[class*="ad-container"]
 ##[src*="casino"], [src*="slot"], [src*="totosite"]
 ||googletagservices.com^
-||googlesyndication.com^
-
-! 웹툰 이미지 서버 예외 허용
-@@||st.kakaocdn.net^
-@@||navercp.com^
-@@||imgbox.com^
-@@/wp-content/uploads/
