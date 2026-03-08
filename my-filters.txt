@@ -1,7 +1,7 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated & Refined)
+! Title: Custom Adblock Filters (Wix-based Joosomoa Integrated)
 ! Last Modified: 2026-03-08
-! Version: 1.7
+! Version: 1.8
 ! --------------------------------------------------
 
 ! === [1. 뽐뿌 모바일(m.ppomppu.co.kr) 최적화] ===
@@ -18,13 +18,14 @@ m.ppomppu.co.kr##.board_view_ad
 m.ppomppu.co.kr##.view_ad_title
 
 ! === [2. 웹툰 및 커뮤니티 전용 규칙] ===
-! 주소모아(Joosomoa) - 상단 랭킹 및 메인 그리드 광고 정밀 차단
-joosomoa*.com##.max-w-screen-xl.mx-auto.px-4.py-2 > div.grid > a
-joosomoa*.com##.max-w-screen-xl.mx-auto.px-4.py-2 > div.grid > div:has(img)
-joosomoa*.com##div[class*="flex"][class*="justify-center"]:has(a[href*="http"])
-joosomoa*.com##div:has(> a > img[src*=".gif"])
-joosomoa*.com##div:has(> a > img[src*="data:image"])
-joosomoa*.com##.z-10.w-full.bg-white:style(position: static !important;)
+! 주소모아(Joosomoa) - Wix 기반 원천 차단 규칙
+joosomoa*.com###SITE_HEADER
+joosomoa*.com###comp-m0nr7j13
+joosomoa*.com##[src^="https://static.wixstatic.com/media/"]
+joosomoa*.com##div[id^="comp-"]:has(img[src*="wixstatic"])
+joosomoa*.com##.Exmq9 > div.TmK0x > div._FiCX
+joosomoa*.com##[class*="WixAds"]
+joosomoa*.com##[id^="WIX_ADS"]
 
 ! XToon 시리즈
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
