@@ -1,70 +1,44 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated Master, Optimized)
+! Title: Custom Adblock Filters (Integrated Master)
 ! Last Modified: 2026-03-08
-! Version: 6.3
+! Version: 6.2
 ! --------------------------------------------------
 
 ! === [1. 웹 빌더 기반 사이트 공백 및 레이아웃 최적화] ===
-! 고급 셀렉터이므로 ABP 권장 문법인 #?# 사용[web:1][web:13]
-joosomoa*.com,xn--365-*.com,jusokok*.com#?#section:has(img[src*="wixstatic"]):not(:has(span))
-joosomoa*.com,xn--365-*.com,jusokok*.com#?#section:has(img[src*=".gif"]):not(:has(span))
-
-! 상단 헤더 제거 및 본문 패딩 제거[web:1]
-joosomoa*.com,xn--365-*.com,jusokok*.com##header#SITE_HEADER
+joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
+joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*=".gif"]):not(:has(span))
+joosomoa*.com,xn--365-*.com,jusokok*.com##header#SITE_HEADER:style(display: none !important; height: 0px !important; min-height: 0px !important;)
 joosomoa*.com,xn--365-*.com,jusokok*.com##main#PAGES_CONTAINER:style(padding-top: 0px !important; margin-top: 0px !important;)
 
 ! === [2. 일반 게시판 기반 사이트 배너 및 팝업 차단] ===
-! 불필요한 .gif 배너 제거[web:1]
-mingky*.net,tokyohot*.com,fdd-01.com,bampt*.com,19yang*.com,sexflix*.com#?#img[src*=".gif"]
-
-! mingky: 상단 라인 배너 및 리스트 썸네일 정리[web:1]
+! 추가된 도메인들의 배너 이미지 및 레이아웃 정밀 타겟팅
+mingky*.net,tokyohot*.com,fdd-01.com,bampt*.com,19yang*.com,sexflix*.com##img[src*=".gif"]
 mingky*.net###top_line_banner
 mingky*.net##.responsive-pf-image
-mingky*.net##div#pf-list-all-nogroup > div.img-item
-
-! tokyohot: 무작위 ID 팝업/배너, 데이터 폴더 배너 차단[web:1]
+mingky*.net###pf-list-all-nogroup > div.img-item
 tokyohot*.com###ugrmswipntlvqjfkho
 tokyohot*.com##[src*="/data/banner_bbs/"]
-
-! fdd: 썸네일 및 팝업 이미지 제거[web:1]
 fdd-01.com##.img-thumbnail
 fdd-01.com##[src*="/data/newwin/"]
-
-! bampt: 배너 및 팝업 오버레이 차단[web:1]
 bampt*.com##.small-banner-item
 bampt*.com###popupOverlay
 bampt*.com##[src*="/uploads/banners/"]
 bampt*.com##[src*="/uploads/popups/"]
-
-! 19yang, sexflix: 메인 배너 영역 제거[web:1]
 19yang*.com,sexflix*.com##.main_ban
 
-! === [3. 본문 데이터 보호 (요소 숨김 예외 처리)] ===
-! ABP 표준 예외 문법 #@# 사용[web:1][web:2][web:11]
-joosomoa*.com#@#div[data-testid="linkElement"]
-xn--365-*.com#@#div[data-testid="linkElement"]
-mingky*.net#@#.img-item
-sexflix*.com#@#.board_list
+! === [3. 본문 데이터 강제 보호 (오진 방지 화이트리스트)] ===
+@@||joosomoa*.com##div[data-testid="linkElement"]
+@@||xn--365-*.com##div[data-testid="linkElement"]
+@@||mingky*.net##.img-item
+@@||sexflix*.com##.board_list
 
 ! === [4. 기타 커뮤니티 및 가변 주소 최적화] ===
-! 뽐뿌 모바일: 상단 네비 재배치 및 상단 여백 제거[web:1]
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
 m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
-
-! xtoon: 메인 썸네일(광고/홍보 이미지) 숨김[web:15]
 t1.xtoon365.com,t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
-
-! newtoki: hover 시만 표시되는 가림 레이어 제거[web:15]
 newtoki*.com##.cursor.to-show
 
-! === [5. 범용 네트워크 및 코스메틱 차단 규칙] ===
-! 공통 광고 배너 클래스 숨김[web:1]
+! === [5. 범용 네트워크 차단 규칙] ===
 ##.ad-banner
-
-! 도박/토토 관련 이미지·iframe 강력 차단[web:1]
-##[src*="casino"]
-##[src*="slot"]
-##[src*="totosite"]
-
-! Google Ad Manager/광고 서비스 차단[web:4]
+##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
