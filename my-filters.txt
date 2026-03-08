@@ -1,16 +1,16 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters
+! Title: Custom Adblock Filters (Integrated)
 ! Last Modified: 2026-03-08
+! Version: 6.1
 ! --------------------------------------------------
 
-! === [1. 주소모아 & 링크365 (검은 빈 껍데기 완벽 제거)] ===
-! 광고가 빠진 후 남는 첫 번째 검은 섹션 박스 자체를 강제로 날림
-joosomoa*.com,xn--365-*.com##section[data-testid="page-section"]:first-of-type
-joosomoa*.com,xn--365-*.com##header#SITE_HEADER:style(display: none !important; height: 0px !important;)
+! === [1. 웹 빌더 기반 사이트 공백 및 레이아웃 최적화] ===
+joosomoa*.com,xn--365-*.com##section:has(img[src*="wixstatic"]):not(:has(span))
+joosomoa*.com,xn--365-*.com##section:has(img[src*=".gif"]):not(:has(span))
+joosomoa*.com,xn--365-*.com##header#SITE_HEADER:style(display: none !important; height: 0px !important; min-height: 0px !important;)
 joosomoa*.com,xn--365-*.com##main#PAGES_CONTAINER:style(padding-top: 0px !important; margin-top: 0px !important;)
 
-! === [2. 신규 S사이트 전용 차단 규칙] ===
-! 민망한 이름은 빼고 도메인만 타겟팅하여 움직이는 배너와 껍데기 제거
+! === [2. 일반 게시판 기반 사이트 배너 차단] ===
 sexflix*.com##img[src*=".gif"]
 sexflix*.com##a[href*="http"]:has(img[src*=".gif"]):not(:has(span))
 sexflix*.com##div[class*="banner"]
@@ -18,18 +18,19 @@ sexflix*.com##div[id*="banner"]
 sexflix*.com##.ad_wrap
 sexflix*.com##.ad-box
 
-! === [3. 본문 목록 강제 보호 (공통 화이트리스트)] ===
-! 진짜 목록들이 날아가는 것을 방지
+! === [3. 본문 데이터 강제 보호 (오진 방지 화이트리스트)] ===
 @@||joosomoa*.com##div[data-testid="linkElement"]
 @@||xn--365-*.com##div[data-testid="linkElement"]
 @@||sexflix*.com##.board_list
 @@||sexflix*.com##.link_list
 
-! === [4. 뽐뿌 및 기존 규칙 유지] ===
+! === [4. 기타 커뮤니티 및 가변 주소 최적화] ===
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
 m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
 t1.xtoon365.com,t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
 newtoki*.com##.cursor.to-show
+
+! === [5. 범용 네트워크 차단 규칙] ===
 ##.ad-banner
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
