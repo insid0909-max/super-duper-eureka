@@ -1,28 +1,30 @@
 [Adblock Plus 2.0]
-! Title: Ultimate Structural Master Filter (Anti-Ad Architecture)
+! Title: Ultimate Structural Master Filter (v3.1 Automatic)
 ! Last Modified: 2026-03-08
-! Version: 3.0
+! Version: 3.1
 ! --------------------------------------------------
 
-! === [1. Wix 및 유사 엔진 구조적 원천 차단] ===
-! 첫 번째 섹션이 이미지만 포함하거나 특정 광고 키워드를 담고 있으면 통째로 삭제
-*##section[data-testid="page-section"]:first-of-type:has(img):not(:has(span))
-*##section[data-content-summary*="광고"]
+! === [1. Wix 및 유사 구조 사이트 원천 차단 (주소모아/링크365 공통)] ===
+! 광고 이미지가 포함된 최상단 섹션 및 플로팅 배너 제거
+*##section[data-testid="page-section"]:first-of-type:has(img)
+*##section:has(div[class*="banner"]), *##section:has(div[id*="banner"])
 *##div[id^="comp-"]:has(img[src*="wixstatic"]):not(:has(span))
 
-! 광고 미디어 서버(Wixstatic) 정밀 타겟팅 (본문 아이콘 40/50px 제외)
+! 윅스 미디어 서버 광고 이미지 원천 봉쇄 (본문 아이콘 제외)
 *##[src^="https://static.wixstatic.com/media/"]:not([width="40"]):not([width="50"])
 *##div[data-testid="linkElement"]:has(img[src*=".gif"])
+*##div[data-testid="linkElement"]:has(img[src*="data:image"])
 
-! 상단 검은 공백 및 레이아웃 파괴 요소 강제 보정 (화면 밀착형)
-*##header#SITE_HEADER:style(display: none !important; visibility: hidden !important; height: 0px !important;)
+! 상단 검은 공백 및 레이아웃 파괴 요소 강제 제거 (화면 밀착)
+*##header#SITE_HEADER:style(display: none !important; height: 0px !important;)
 *##main#PAGES_CONTAINER:style(padding-top: 0px !important; margin-top: 0px !important;)
+*##div[data-testid="mesh-container-content"] > div:first-child:has(img):style(display: none !important;)
 
-! [안전 장치] 텍스트 목록(span 포함) 및 2번 이후 섹션은 철저히 보호
+! [안전 장치] 텍스트가 포함된 진짜 목록은 철저히 보호 (화이트리스트)
 @@||*##div[data-testid="linkElement"]:has(span)
 @@||*##section[data-testid="page-section"]:nth-of-type(n+2)
 
-! === [2. 커뮤니티(뽐뿌 등) 및 가변 웹툰 사이트 최적화] ===
+! === [2. 기존 커뮤니티 및 가변 웹툰 최적화] ===
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
 m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
@@ -33,8 +35,3 @@ newtoki*.com##.cursor.to-show
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
 ||googlesyndication.com^
-
-! 웹툰 및 본문 이미지 로딩 보호
-@@||st.kakaocdn.net^
-@@||navercp.com^
-@@||imgbox.com^
