@@ -1,37 +1,38 @@
 [Adblock Plus 2.0]
-! Title: Wildcard Master Filter (Auto-Numbering Support)
+! Title: Domain-Agnostic Universal Master Filter (Final Boss)
 ! Last Modified: 2026-03-08
-! Version: 5.0
+! Version: 6.0
 ! --------------------------------------------------
 
-! === [1. 주소모아 & 365랭킹 도메인 숫자 변동 자동 대응] ===
-! 와일드카드(*)를 사용하여 사이트 주소의 숫자가 바뀌어도 무조건 추적 차단합니다.
+! === [1. 전 도메인 공통: 유사 사이트 배너 무조건 전역 차단] ===
+! 도메인 주소 없이, 웹사이트의 엔진과 무관하게 링크 형태의 배너를 모조리 날립니다.
+##a[href*="http"]:has(img[src*=".gif"]):not(:has(span))
+##a[href*="http"]:has(img[src*="wixstatic"]):not(:has(span))
+##a[target="_blank"]:has(img[src*="banner"])
+##[class*="banner"]:has(a > img)
+##[id*="banner"]:has(a > img)
+##[class*="ad_box"], ##[class*="ad-box"]
 
-! 1-1. 광고 배너 및 GIF 이미지 원천 차단 (작은 아이콘은 보호)
-joosomoa*.com,xn--365-*.com##img[src*="static.wixstatic.com/media/"]:not([width="40"]):not([width="50"]):not([width="30"])
-joosomoa*.com,xn--365-*.com##img[src*=".gif"]
+! === [2. Wix 기반 광고 및 공백 제거 (주소모아, 365랭킹 등)] ===
+##section[data-testid="page-section"]:first-of-type:has(img)
+##header#SITE_HEADER:style(display: none !important; height: 0px !important;)
+##main#PAGES_CONTAINER:style(padding-top: 0px !important; margin-top: 0px !important;)
 
-! 1-2. 배너를 감싸고 있는 링크 박스와 상단 검은 공백(섹션) 정밀 제거
-joosomoa*.com,xn--365-*.com##a[href*="http"]:has(img[src*="wixstatic"]):not(:has(span))
-joosomoa*.com,xn--365-*.com##a[href*="http"]:has(img[src*=".gif"])
-joosomoa*.com,xn--365-*.com##section:has(img[src*=".gif"])
-joosomoa*.com,xn--365-*.com##section:has(a[href*="http"] > img):not(:has(span))
+! === [3. 비-Wix 타 엔진 공백/여백 강제 제거 (주소오케이 등)] ===
+! (Gnuboard 등 타 엔진에서 배너가 있던 빈 공간을 추적해 없앰)
+##.top_banner_wrap, ##.main_banner_wrap, ##.s_banner
+##div[style*="height: 100px"][style*="background-color"]
 
-! 1-3. 불필요한 상단 여백 제거 (목록을 화면 최상단으로 밀착)
-joosomoa*.com,xn--365-*.com##header#SITE_HEADER:style(display: none !important; height: 0px !important; min-height: 0px !important;)
-joosomoa*.com,xn--365-*.com##main#PAGES_CONTAINER:style(padding-top: 0px !important; margin-top: 0px !important;)
+! === [4. 본문 목록 강제 보호 (오진 방지 화이트리스트)] ===
+@@||*##div[data-testid="linkElement"]
+@@||*##.board_list, @@||*##.link_list
 
-! 1-4. [핵심 안전장치] 본문 데이터 컨테이너 강제 보호 (오진 방지)
-@@||joosomoa*.com##div[data-testid="linkElement"]
-@@||xn--365-*.com##div[data-testid="linkElement"]
-
-! === [2. 기타 커뮤니티 및 가변 웹툰 최적화 유지] ===
+! === [5. 기타 커뮤니티 및 가변 웹툰 최적화 유지] ===
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
 m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
 t1.xtoon365.com,t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
 newtoki*.com##.cursor.to-show
 
-! === [3. 네트워크 레벨 범용 차단 (도박, 성인 배너)] ===
-##.ad-banner
+! === [6. 범용 네트워크 차단 (도박, 카지노 등)] ===
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
