@@ -1,40 +1,30 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Wix-based Sites Master Final)
+! Title: Wix-based Generic Master Filter (Universal)
 ! Last Modified: 2026-03-08
-! Version: 2.3
+! Version: 2.4
 ! --------------------------------------------------
 
-! === [1. Wix 기반 주소 유도 사이트 통합 (주소모아, 365랭킹 등) ] ===
-! 윅스 미디어 서버의 광고 이미지를 정밀 차단 (본문 아이콘 크기는 예외)
-*##[src^="https://static.wixstatic.com/media/"]:not([width="40"]):not([width="50"])
-*##div[data-testid="linkElement"]:has(img[src*="wixstatic"]):not(:has(span))
+! === [1. Wix 엔진 기반 사이트 포괄적 대응 (주소모아 계열 공통)] ===
+! 특정 ID 대신 Wix의 구조적 특성(data-testid)을 타겟팅하여 모든 유사 사이트 차단
+*##section[data-testid="page-section"]:first-of-type:has(img)
+*##section[data-content-summary*="광고"]
+*##div[id^="comp-"]:has(img[src*="wixstatic"]):not(:has(span))
 
-! 상단 광고 섹션 및 검은색 공백 제거
-xn--365-*.com##section[data-testid="page-section"]:first-of-type
-joosomoa*.com##section[data-testid="page-section"]:first-of-type
+! 윅스 미디어 서버에서 불러오는 광고 이미지 소스 원천 차단 (본문 아이콘 제외)
+*##[src^="https://static.wixstatic.com/media/"]:not([width="40"]):not([width="50"])
+*##div[data-testid="linkElement"]:has(img[src*=".gif"])
+
+! 광고 제거 후 남는 상단 검은색 공백(Header) 및 여백 강제 제거
 *##header#SITE_HEADER:style(display: none !important; height: 0px !important;)
 *##main#PAGES_CONTAINER:style(padding-top: 0px !important; margin-top: 0px !important;)
 
-! 본문 목록(성인링크, 스포츠중계 등) 보호 (화이트리스트)
-@@||xn--365-*.com##div[data-testid="linkElement"]
-@@||joosomoa*.com##div[data-testid="linkElement"]
+! [중요] 본문 목록(텍스트 포함 요소)은 절대 차단되지 않도록 보호
+@@||*##div[data-testid="linkElement"]:has(span)
 @@||*##section[data-testid="page-section"]:nth-of-type(n+2)
 
-! === [2. 뽐뿌 모바일(m.ppomppu.co.kr) 최적화] ===
+! === [2. 기존 커뮤니티 및 범용 규칙 통합] ===
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
 m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
-m.ppomppu.co.kr##.contents:style(margin-top: 0px !important; padding-top: 5px !important;)
-m.ppomppu.co.kr##.banner_area
-m.ppomppu.co.kr##[id^="div-gpt-ad"]
-
-! === [3. 기타 웹툰 및 커뮤니티 전용 규칙] ===
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
-t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
-toon-bro.*##html, body:style(overflow: auto !important; height: auto !important; position: static !important;)
-yatoon*.com##[src*="/ban/banner/"]
 newtoki*.com##.cursor.to-show
-
-! === [4. 공통 범용 차단] ===
-##.ad-banner
-##[src*="casino"], [src*="slot"], [src*="totosite"]
-||googletagservices.com^
+##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
