@@ -1,7 +1,7 @@
 [Adblock Plus 2.0]
 ! Title: Custom Adblock Filters (Integrated)
 ! Last Modified: 2026-03-08
-! Version: 1.5
+! Version: 1.6
 ! --------------------------------------------------
 
 ! === [1. 뽐뿌 모바일(m.ppomppu.co.kr) 최적화] ===
@@ -23,6 +23,15 @@ m.ppomppu.co.kr##.board_view_ad
 m.ppomppu.co.kr##.view_ad_title
 
 ! === [2. 웹툰 및 커뮤니티 전용 규칙] ===
+! 주소모아(Joosomoa) - 상단 랭킹 광고 및 메인 배너
+joosomoa*.com##.banner-item
+joosomoa*.com##.main-banner
+joosomoa*.com##.top-banner
+joosomoa*.com##[class*="banner-wrap"]
+joosomoa*.com##.flex.justify-center.items-center.my-4
+joosomoa*.com##div[style*="z-index: 9999"]
+joosomoa*.com##.max-w-screen-xl.mx-auto.px-4.py-2 > div.grid
+
 ! XToon 시리즈
 t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
 t1.xtoon365.com##.pb-60.chapter-ad.w-100
