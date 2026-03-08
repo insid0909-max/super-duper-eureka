@@ -1,27 +1,40 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Wix-based Sites Master)
+! Title: Custom Adblock Filters (Wix-based Sites Master Final)
 ! Last Modified: 2026-03-08
-! Version: 2.2
+! Version: 2.3
 ! --------------------------------------------------
 
 ! === [1. Wix 기반 주소 유도 사이트 통합 (주소모아, 365랭킹 등) ] ===
-! 상단 광고 섹션 및 가변형 배너 영역 원천 차단
-*##section[data-testid="page-section"]:first-of-type
-*##section[data-content-summary*="광고"]
-*##div[id^="comp-"]:has(img[src*="wixstatic"])
-*##div[data-testid="linkElement"]:has(img[src*=".gif"])
+! 윅스 미디어 서버의 광고 이미지를 정밀 차단 (본문 아이콘 크기는 예외)
+*##[src^="https://static.wixstatic.com/media/"]:not([width="40"]):not([width="50"])
+*##div[data-testid="linkElement"]:has(img[src*="wixstatic"]):not(:has(span))
 
-! 상단 검은색 공백 제거 및 레이아웃 밀착 (모든 유사 사이트 적용)
+! 상단 광고 섹션 및 검은색 공백 제거
+xn--365-*.com##section[data-testid="page-section"]:first-of-type
+joosomoa*.com##section[data-testid="page-section"]:first-of-type
 *##header#SITE_HEADER:style(display: none !important; height: 0px !important;)
 *##main#PAGES_CONTAINER:style(padding-top: 0px !important; margin-top: 0px !important;)
 
-! 본문 목록(성인링크, 스포츠중계 등) 보호 및 오진 방지 (화이트리스트)
-@@||joosomoa*.com##div[data-testid="linkElement"]:has(span)
-@@||xn--365-*.com##div[data-testid="linkElement"]:has(span)
+! 본문 목록(성인링크, 스포츠중계 등) 보호 (화이트리스트)
+@@||xn--365-*.com##div[data-testid="linkElement"]
+@@||joosomoa*.com##div[data-testid="linkElement"]
 @@||*##section[data-testid="page-section"]:nth-of-type(n+2)
 
 ! === [2. 뽐뿌 모바일(m.ppomppu.co.kr) 최적화] ===
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
-m.ppomppu.co.kr##.sub_title:style(position: absolute !important;)
 m.ppomppu.co.kr###container:style(padding-top: 0px !important;)
-m.ppomppu.co.kr##.contents:style(margin-
+m.ppomppu.co.kr##.contents:style(margin-top: 0px !important; padding-top: 5px !important;)
+m.ppomppu.co.kr##.banner_area
+m.ppomppu.co.kr##[id^="div-gpt-ad"]
+
+! === [3. 기타 웹툰 및 커뮤니티 전용 규칙] ===
+t1.xtoon365.com##.border.rounded-2.w-100.img-fluid
+t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
+toon-bro.*##html, body:style(overflow: auto !important; height: auto !important; position: static !important;)
+yatoon*.com##[src*="/ban/banner/"]
+newtoki*.com##.cursor.to-show
+
+! === [4. 공통 범용 차단] ===
+##.ad-banner
+##[src*="casino"], [src*="slot"], [src*="totosite"]
+||googletagservices.com^
