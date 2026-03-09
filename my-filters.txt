@@ -1,14 +1,18 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated Master v6.3)
+! Title: Custom Adblock Filters (Integrated Master v6.4)
 ! Last Modified: 2026-03-09
-! Version: 6.3
+! Version: 6.4
 ! --------------------------------------------------
 
-! === [1. 보배드림(BobaeDream) 상단 빈칸 제거 및 광고 차단] ===
+! === [1. 보배드림(BobaeDream) 상단 빈칸 및 잔여 여백 완전 제거] ===
 m.bobaedream.co.kr##.upAdBox
 m.bobaedream.co.kr##.top_adv
-m.bobaedream.co.kr##div[id^="google_ads_iframe"]
+m.bobaedream.co.kr##div[style*="height: 100px"]
+m.bobaedream.co.kr##div[style*="height: 90px"]
+! 게시글 제목 영역을 최상단으로 밀착 (모든 여백 제거)
 m.bobaedream.co.kr##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
+m.bobaedream.co.kr##.view_head:style(margin-top: 0px !important; border-top: 0px !important;)
+m.bobaedream.co.kr##.view_wrap:style(padding-top: 0px !important;)
 
 ! === [2. 웹 빌더 기반 사이트 공백 및 레이아웃 최적화] ===
 joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
