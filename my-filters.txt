@@ -1,19 +1,19 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated Master v7.2)
+! Title: Custom Adblock Filters (Integrated Master v7.3)
 ! Last Modified: 2026-03-09
-! Version: 7.2
+! Version: 7.3
 ! --------------------------------------------------
 
-! === [1. 보배드림 & 보배링크 상단 정밀 차단 및 여백 제거] ===
-! 상단 빈 공간의 주범인 높이값이 지정된 컨테이너 강제 제거
-m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important; min-height:0px !important; margin:0 !important; padding:0 !important;)
+! === [1. 보배드림 & 보배링크 상단 빈 박스 및 광고 완전 제거] ===
+! 상단 광고 컨테이너 자체를 물리적으로 존재하지 않게 처리 (0px 강제)
+m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important; min-height:0px !important; margin:0 !important; padding:0 !important; visibility:hidden !important;)
 m.bobaedream.co.kr,bobaelink*.xyz##.top_adv:style(display:none !important; height:0px !important;)
-m.bobaedream.co.kr,bobaelink*.xyz##div[style*="height: 100px"]
-m.bobaedream.co.kr,bobaelink*.xyz##div[style*="height: 90px"]
+m.bobaedream.co.kr,bobaelink*.xyz##div[id^="google_ads"]:style(height:0px !important;)
 
-! 글 목록은 보호하면서 첫 번째 광고 섹션만 타겟팅 (우리가 찾아낸 위치 규칙 보완)
+! 알려주신 위치 기반 규칙 보강: 광고 이미지 패턴이 보이면 해당 div 통째로 삭제
 m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):has(img[src*="bobaelink"])
 m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):has(img[src*=".gif"])
+m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):has(a[href*="bobaelink"])
 
 ! 상단 레이아웃 본문 밀착 (여백 완전 박멸)
 m.bobaedream.co.kr,bobaelink*.xyz##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
@@ -26,6 +26,7 @@ mingky*.net###top_line_banner
 tokyohot*.com###ugrmswipntlvqjfkho
 fdd-01.com##[src*="/data/newwin/"]
 bampt*.com###popupOverlay
+19yang*.com,sexflix*.com##.main_ban
 
 ! === [3. 기타 최적화 및 범용 네트워크 차단] ===
 m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
