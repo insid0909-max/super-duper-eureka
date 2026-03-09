@@ -1,21 +1,21 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated Master v6.9)
+! Title: Custom Adblock Filters (Integrated Master v7.0 - Final)
 ! Last Modified: 2026-03-09
-! Version: 6.9
+! Version: 7.0
 ! --------------------------------------------------
 
 ! === [1. 보배드림 & 보배링크 상단 광고 구조적 종결] ===
-! 상단 1~3번째 섹션 중 광고 서버 이미지를 포함한 모든 칸 삭제
+! 우리가 찾아낸 필살기: 상단 1~3번째 섹션 중 이미지 포함된 박스 삭제
 bobaelink*.xyz,m.bobaedream.co.kr##.wrap > div:nth-of-type(-n+3):has(img)
 bobaelink*.xyz,m.bobaedream.co.kr##.wrap > div:nth-of-type(1)
 bobaelink*.xyz,m.bobaedream.co.kr##.upAdBox
 
-! 보배링크 전용 배너 이미지 경로 및 파일 형식 차단
+! 광고 서버 경로 및 배너 형식 차단 강화
 bobaelink*.xyz##img[src*="bobaelink"]
 bobaelink*.xyz##img[src*=".gif"]
 bobaelink*.xyz##a[href*="http"]:has(img)
 
-! 레이아웃 강제 밀착 (상단 빈 여백 제거)
+! 상단 레이아웃 강제 밀착 (여백 0)
 bobaelink*.xyz,m.bobaedream.co.kr##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
 bobaelink*.xyz,m.bobaedream.co.kr##.view_head:style(margin-top: 0px !important; border-top: 0px !important;)
 
