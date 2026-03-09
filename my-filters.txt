@@ -1,23 +1,23 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated Master v7.0 - Final)
+! Title: Custom Adblock Filters (Integrated Master v7.1)
 ! Last Modified: 2026-03-09
-! Version: 7.0
+! Version: 7.1
 ! --------------------------------------------------
 
-! === [1. 보배드림 & 보배링크 상단 광고 구조적 종결] ===
-! 우리가 찾아낸 필살기: 상단 1~3번째 섹션 중 이미지 포함된 박스 삭제
-bobaelink*.xyz,m.bobaedream.co.kr##.wrap > div:nth-of-type(-n+3):has(img)
-bobaelink*.xyz,m.bobaedream.co.kr##.wrap > div:nth-of-type(1)
+! === [1. 보배드림 & 보배링크 상단 정밀 차단 및 복구] ===
+! 글 목록 페이지에서 진짜 글들이 날아가지 않도록 위치 기반 규칙을 더 정밀하게 수정
+bobaelink*.xyz,m.bobaedream.co.kr##.wrap > div:nth-of-type(1):has(img[src*="bobaelink"])
+bobaelink*.xyz,m.bobaedream.co.kr##.wrap > div:nth-of-type(1):has(img[src*=".gif"])
 bobaelink*.xyz,m.bobaedream.co.kr##.upAdBox
+bobaelink*.xyz,m.bobaedream.co.kr##.top_adv
 
-! 광고 서버 경로 및 배너 형식 차단 강화
+! 광고 이미지 경로 자체를 차단 (목록의 썸네일은 보호)
 bobaelink*.xyz##img[src*="bobaelink"]
 bobaelink*.xyz##img[src*=".gif"]
-bobaelink*.xyz##a[href*="http"]:has(img)
 
-! 상단 레이아웃 강제 밀착 (여백 0)
+! 상단 레이아웃 밀착 유지
 bobaelink*.xyz,m.bobaedream.co.kr##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
-bobaelink*.xyz,m.bobaedream.co.kr##.view_head:style(margin-top: 0px !important; border-top: 0px !important;)
+bobaelink*.xyz,m.bobaedream.co.kr##.view_head:style(margin-top: 0px !important;)
 
 ! === [2. 웹 빌더 및 일반 게시판 통합 차단] ===
 joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
