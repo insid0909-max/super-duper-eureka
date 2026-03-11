@@ -1,31 +1,29 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Structure-Isolated v7.12)
+! Title: Custom Adblock Filters (Integrated Master v7.10)
 ! Last Modified: 2026-03-11
-! Version: 7.12
+! Version: 7.10
 ! --------------------------------------------------
 
-! === [A. 다모앙(Damoang) 전용 영역 - 여백 소멸 및 기능 보호] ===
-! 1. 광고 그리드 및 여백 제거 (사용자 제보 클래스 기반)
+! === [1. 다모앙(Damoang) 레이아웃 여백 정밀 타겟팅] ===
+! 알려주신 광고 그리드 컨테이너 및 여백 제거
 damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important; margin:0 !important; padding:0 !important;)
 damoang.net##.text-gray-400:has-text(AD):style(display:none !important; height:0px !important;)
-damoang.net##ins.adsbygoogle:style(display:none !important; height:0px !important;)
 
-! 2. 필수 기능 버튼 및 메뉴 강제 보호 (절대 삭제 금지 영역)
+! 구글 자동광고 잔여 공간 압착
+damoang.net##ins.adsbygoogle:style(display:none !important; height:0px !important;)
+damoang.net##div[id^="google_ads_iframe"]:style(display:none !important; height:0px !important;)
+
+! === [2. 기능 버튼 강제 보호 (오진 방지)] ===
+! 붉은색 마킹하셨던 주요 버튼들은 절대 차단되지 않도록 예외 처리
 @@||damoang.net##.fixed-bottom
 @@||damoang.net##.btn-write
 @@||damoang.net##.btn-report
 @@||damoang.net##[data-bs-toggle="collapse"]
 @@||damoang.net##.text-xs.font-bold.text-gray-500:has-text(작성자 최근 활동)
 
-! === [B. 보배드림 & 보배링크 전용 영역 - 상단 밀착] ===
-! 검증된 위치 기반 규칙 (다른 사이트에 영향 없음)
-m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):style(display:none !important; height:0px !important;)
-m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important;)
-m.bobaedream.co.kr,bobaelink*.xyz##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
-
-! === [C. 공통 및 기타 커뮤니티 정밀 차단] ===
-joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
+! === [3. 보배드림 & 기타 통합 규칙] ===
+m.bobaedream.co.kr##.upAdBox:style(display:none !important; height:0px !important;)
+m.bobaedream.co.kr##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
 mingky*.net,tokyohot*.com,fdd-01.com,bampt*.com,19yang*.com,sexflix*.com##img[src*=".gif"]
-mingky*.net###top_line_banner
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
