@@ -1,7 +1,7 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Structure-Isolated v7.14)
+! Title: Custom Adblock Filters (Structure-Isolated v7.15)
 ! Last Modified: 2026-03-11
-! Version: 7.14
+! Version: 7.15
 ! --------------------------------------------------
 
 ! === [A. 다모앙(Damoang) - 검증된 규칙 유지] ===
@@ -16,12 +16,15 @@ m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):style(display:none
 m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important;)
 m.bobaedream.co.kr,bobaelink*.xyz##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
 
-! === [D. 조아툰(Joatoon) - 알려주신 속성 기반 정밀 차단] ===
-! .object-cover 속성을 가진 광고 이미지와 그 부모 컨테이너 제거
-joatoon*.com##.object-cover
-joatoon*.com##div:has(> .object-cover):style(display:none !important; height:0px !important; margin:0 !important;)
-! 상단 배너 전용 클래스 추가 차단
+! === [D. 조아툰(Joatoon) - 알려주신 .object-cover 완전 소멸] ===
+! .object-cover 속성을 가진 모든 광고 이미지와 그 부모를 강제로 제거
+joatoon*.com##.object-cover:style(display:none !important; height:0px !important;)
+joatoon*.com##div:has(.object-cover):style(display:none !important; height:0px !important; margin:0 !important; padding:0 !important;)
+joatoon*.com##a:has(.object-cover):style(display:none !important; height:0px !important;)
+
+! 상단 배너 전용 클래스 및 여백 추가 제거
 joatoon*.com##.top-banner, joatoon*.com##.main-banner
+joatoon*.com##header + div:style(margin-top:0px !important;)
 
 ! === [C. 공통 및 기타 커뮤니티 정밀 차단] ===
 joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
