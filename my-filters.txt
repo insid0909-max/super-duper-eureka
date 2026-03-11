@@ -1,34 +1,34 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Rollback & Stable v7.4)
-! Last Modified: 2026-03-09
-! Version: 7.4
+! Title: Custom Adblock Filters (Integrated Master v7.8)
+! Last Modified: 2026-03-11
+! Version: 7.8
 ! --------------------------------------------------
 
-! === [1. 보배드림 & 보배링크 상단 구조적 종결 (성공 버전 복구)] ===
-! 사용자님께서 직접 검증하신 가장 확실한 위치 기반 차단 규칙
-bobaelink*.xyz,m.bobaedream.co.kr##.wrap > div:nth-of-type(1)
-bobaelink*.xyz,m.bobaedream.co.kr##.upAdBox
-bobaelink*.xyz,m.bobaedream.co.kr##.top_adv
+! === [1. 다모앙(Damoang) 광고 여백만 정밀 제거 (기능 버튼 보호)] ===
+! 광고용 'AD' 문구와 그 직계 부모 여백만 제거 (플로팅 버튼 보호)
+damoang.net##.text-gray-400:has-text(AD):style(display:none !important; height:0px !important;)
+damoang.net##.ad-unit:style(display:none !important; height:0px !important; margin:0 !important;)
+damoang.net##.ad-area:style(display:none !important; height:0px !important; margin:0 !important;)
 
-! 보배링크 전용 광고 이미지 경로 원천 차단
-bobaelink*.xyz##img[src*="bobaelink"]
-bobaelink*.xyz##img[src*=".gif"]
+! 구글 자동광고가 생성하는 빈 프레임만 제거
+damoang.net##ins.adsbygoogle[data-ad-client]:style(display:none !important; height:0px !important;)
+damoang.net##div[id^="google_ads_iframe"]:style(display:none !important; height:0px !important;)
 
-! 상단 레이아웃 본문 강제 밀착
-bobaelink*.xyz,m.bobaedream.co.kr##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
-bobaelink*.xyz,m.bobaedream.co.kr##.view_head:style(margin-top: 0px !important;)
+! [오진 방지] 우측 하단 플로팅 버튼 및 작성자 활동 메뉴 강제 보호
+@@||damoang.net##.fixed-bottom
+@@||damoang.net##.btn-write
+@@||damoang.net##.btn-report
+@@||damoang.net##[data-bs-toggle="collapse"]
 
-! === [2. 웹 빌더 및 일반 게시판 통합 차단] ===
+! === [2. 보배드림 상단 여백 제거 (기능 유지)] ===
+m.bobaedream.co.kr##.upAdBox:style(display:none !important; height:0px !important;)
+m.bobaedream.co.kr##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
+
+! === [3. 웹 빌더 및 기타 커뮤니티 통합] ===
 joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
 mingky*.net,tokyohot*.com,fdd-01.com,bampt*.com,19yang*.com,sexflix*.com##img[src*=".gif"]
 mingky*.net###top_line_banner
 tokyohot*.com###ugrmswipntlvqjfkho
-fdd-01.com##[src*="/data/newwin/"]
 bampt*.com###popupOverlay
-
-! === [3. 기타 최적화 및 범용 네트워크 차단] ===
-m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
-t1.xtoon365.com,t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
-newtoki*.com##.cursor.to-show
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
