@@ -1,22 +1,22 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Speed Optimized v7.18)
+! Title: Custom Adblock Filters (Emergency Fix v7.19)
 ! Last Modified: 2026-03-12
-! Version: 7.18
+! Version: 7.19
 ! --------------------------------------------------
 
-! === [A. 다모앙(Damoang) - 5초 지연 및 로딩 박스 박멸] ===
-! 1. 광고 스크립트 실행 자체를 차단하여 지연 시간 제거
+! === [A. 다모앙(Damoang) - 접속 복구 및 상단 광고 박멸] ===
+! 1. 광고 스크립트 차단으로 5초 지연 방지 (유지)
 ||googlesyndication.com^$domain=damoang.net
 ||googleads.g.doubleclick.net^$domain=damoang.net
 
-! 2. 캡처에 나타난 "로딩 중" 빈 박스 및 상단 예약 공간 물리적 소거
-damoang.net##.ad-area:style(display:none !important; height:0px !important; margin:0 !important;)
-damoang.net##.ad-unit:style(display:none !important; height:0px !important; margin:0 !important;)
+! 2. [복구] 사이트 전체를 날리던 위험한 규칙 삭제 및 정밀 타겟팅으로 변경
+! 상단 광고가 들어가는 고정 클래스만 조준
+damoang.net##.ad-unit:style(display:none !important; height:0px !important;)
+damoang.net##.ad-area:style(display:none !important; height:0px !important;)
 damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important;)
 
-! 3. 로딩 문구 자체를 타겟팅하여 압착
-damoang.net##div:has-text(로딩 중...):style(display:none !important; height:0px !important;)
-damoang.net##.text-gray-400:has-text(AD):style(display:none !important; height:0px !important;)
+! 3. 'AD' 문구만 투명하게 처리 (전체 div 차단 방지)
+damoang.net##.text-gray-400:has-text(AD):style(visibility:hidden !important; height:0px !important;)
 
 ! 4. 필수 기능 보호 (글쓰기, 신고 버튼 등 유지)
 @@||damoang.net##.fixed-bottom
