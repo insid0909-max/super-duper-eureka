@@ -1,34 +1,29 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated Master v7.8)
+! Title: Custom Adblock Filters (Integrated Master v7.10)
 ! Last Modified: 2026-03-11
-! Version: 7.8
+! Version: 7.10
 ! --------------------------------------------------
 
-! === [1. 다모앙(Damoang) 광고 여백만 정밀 제거 (기능 버튼 보호)] ===
-! 광고용 'AD' 문구와 그 직계 부모 여백만 제거 (플로팅 버튼 보호)
+! === [1. 다모앙(Damoang) 레이아웃 여백 정밀 타겟팅] ===
+! 알려주신 광고 그리드 컨테이너 및 여백 제거
+damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important; margin:0 !important; padding:0 !important;)
 damoang.net##.text-gray-400:has-text(AD):style(display:none !important; height:0px !important;)
-damoang.net##.ad-unit:style(display:none !important; height:0px !important; margin:0 !important;)
-damoang.net##.ad-area:style(display:none !important; height:0px !important; margin:0 !important;)
 
-! 구글 자동광고가 생성하는 빈 프레임만 제거
-damoang.net##ins.adsbygoogle[data-ad-client]:style(display:none !important; height:0px !important;)
+! 구글 자동광고 잔여 공간 압착
+damoang.net##ins.adsbygoogle:style(display:none !important; height:0px !important;)
 damoang.net##div[id^="google_ads_iframe"]:style(display:none !important; height:0px !important;)
 
-! [오진 방지] 우측 하단 플로팅 버튼 및 작성자 활동 메뉴 강제 보호
+! === [2. 기능 버튼 강제 보호 (오진 방지)] ===
+! 붉은색 마킹하셨던 주요 버튼들은 절대 차단되지 않도록 예외 처리
 @@||damoang.net##.fixed-bottom
 @@||damoang.net##.btn-write
 @@||damoang.net##.btn-report
 @@||damoang.net##[data-bs-toggle="collapse"]
+@@||damoang.net##.text-xs.font-bold.text-gray-500:has-text(작성자 최근 활동)
 
-! === [2. 보배드림 상단 여백 제거 (기능 유지)] ===
+! === [3. 보배드림 & 기타 통합 규칙] ===
 m.bobaedream.co.kr##.upAdBox:style(display:none !important; height:0px !important;)
 m.bobaedream.co.kr##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
-
-! === [3. 웹 빌더 및 기타 커뮤니티 통합] ===
-joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
 mingky*.net,tokyohot*.com,fdd-01.com,bampt*.com,19yang*.com,sexflix*.com##img[src*=".gif"]
-mingky*.net###top_line_banner
-tokyohot*.com###ugrmswipntlvqjfkho
-bampt*.com###popupOverlay
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
