@@ -1,36 +1,30 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Structure-Isolated v7.13)
+! Title: Custom Adblock Filters (Structure-Isolated v7.14)
 ! Last Modified: 2026-03-11
-! Version: 7.13
+! Version: 7.14
 ! --------------------------------------------------
 
-! === [A. 다모앙(Damoang) - 여백 소멸 및 기능 보호] ===
-damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important; margin:0 !important; padding:0 !important;)
+! === [A. 다모앙(Damoang) - 검증된 규칙 유지] ===
+damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important;)
 damoang.net##.text-gray-400:has-text(AD):style(display:none !important; height:0px !important;)
-damoang.net##ins.adsbygoogle:style(display:none !important; height:0px !important;)
 @@||damoang.net##.fixed-bottom
 @@||damoang.net##.btn-write
-@@||damoang.net##.btn-report
-@@||damoang.net##[data-bs-toggle="collapse"]
 @@||damoang.net##.text-xs.font-bold.text-gray-500:has-text(작성자 최근 활동)
 
-! === [B. 보배드림 & 보배링크 - 상단 밀착] ===
+! === [B. 보배드림 & 보배링크 - 검증된 규칙 유지] ===
 m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):style(display:none !important; height:0px !important;)
 m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important;)
 m.bobaedream.co.kr,bobaelink*.xyz##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
 
-! === [D. 조아툰(Joatoon) - 상단 광고 및 여백 차단] ===
-! 상단 배너 이미지 및 감싸고 있는 링크 제거
-joatoon*.com##.top-banner
-joatoon*.com##.main-banner
-joatoon*.com##div[style*="background-image"]:has(a[href*="casino"])
-joatoon*.com##div[style*="background-image"]:has(a[href*="toto"])
-! 상단 여백 압착
-joatoon*.com##header + div:style(margin-top: 0px !important; padding-top: 0px !important;)
+! === [D. 조아툰(Joatoon) - 알려주신 속성 기반 정밀 차단] ===
+! .object-cover 속성을 가진 광고 이미지와 그 부모 컨테이너 제거
+joatoon*.com##.object-cover
+joatoon*.com##div:has(> .object-cover):style(display:none !important; height:0px !important; margin:0 !important;)
+! 상단 배너 전용 클래스 추가 차단
+joatoon*.com##.top-banner, joatoon*.com##.main-banner
 
 ! === [C. 공통 및 기타 커뮤니티 정밀 차단] ===
 joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
 mingky*.net,tokyohot*.com,fdd-01.com,bampt*.com,19yang*.com,sexflix*.com##img[src*=".gif"]
-mingky*.net###top_line_banner
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
