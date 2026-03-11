@@ -1,35 +1,36 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Integrated Master v7.5 - Final)
-! Last Modified: 2026-03-09
-! Version: 7.5
+! Title: Custom Adblock Filters (Structure-Isolated v7.13)
+! Last Modified: 2026-03-11
+! Version: 7.13
 ! --------------------------------------------------
 
-! === [1. 보배드림 & 보배링크 상단 빈 박스 물리적 제거] ===
-! 광고 영역을 감싸는 부모 컨테이너 자체를 0px로 강제 고정
-m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):style(display:none !important; height:0px !important; margin:0 !important; padding:0 !important;)
-m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important; margin-top:0px !important;)
-m.bobaedream.co.kr,bobaelink*.xyz##.top_adv:style(display:none !important; height:0px !important;)
+! === [A. 다모앙(Damoang) - 여백 소멸 및 기능 보호] ===
+damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important; margin:0 !important; padding:0 !important;)
+damoang.net##.text-gray-400:has-text(AD):style(display:none !important; height:0px !important;)
+damoang.net##ins.adsbygoogle:style(display:none !important; height:0px !important;)
+@@||damoang.net##.fixed-bottom
+@@||damoang.net##.btn-write
+@@||damoang.net##.btn-report
+@@||damoang.net##[data-bs-toggle="collapse"]
+@@||damoang.net##.text-xs.font-bold.text-gray-500:has-text(작성자 최근 활동)
 
-! 광고 이미지가 포함된 링크와 섹션 정밀 사격
-bobaelink*.xyz,m.bobaedream.co.kr##a[href*="bobaelink"]
-bobaelink*.xyz,m.bobaedream.co.kr##img[src*="bobaelink"]
-bobaelink*.xyz,m.bobaedream.co.kr##img[src*=".gif"]
-
-! 본문 컨테이너 위치 강제 보정 (여백 완전 제거)
+! === [B. 보배드림 & 보배링크 - 상단 밀착] ===
+m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):style(display:none !important; height:0px !important;)
+m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important;)
 m.bobaedream.co.kr,bobaelink*.xyz##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
-m.bobaedream.co.kr,bobaelink*.xyz##.view_head:style(margin-top: 0px !important; border-top: 0px !important;)
 
-! === [2. 웹 빌더 및 일반 게시판 통합 차단] ===
+! === [D. 조아툰(Joatoon) - 상단 광고 및 여백 차단] ===
+! 상단 배너 이미지 및 감싸고 있는 링크 제거
+joatoon*.com##.top-banner
+joatoon*.com##.main-banner
+joatoon*.com##div[style*="background-image"]:has(a[href*="casino"])
+joatoon*.com##div[style*="background-image"]:has(a[href*="toto"])
+! 상단 여백 압착
+joatoon*.com##header + div:style(margin-top: 0px !important; padding-top: 0px !important;)
+
+! === [C. 공통 및 기타 커뮤니티 정밀 차단] ===
 joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
 mingky*.net,tokyohot*.com,fdd-01.com,bampt*.com,19yang*.com,sexflix*.com##img[src*=".gif"]
 mingky*.net###top_line_banner
-tokyohot*.com###ugrmswipntlvqjfkho
-fdd-01.com##[src*="/data/newwin/"]
-bampt*.com###popupOverlay
-
-! === [3. 기타 최적화 및 범용 네트워크 차단] ===
-m.ppomppu.co.kr##.top_nav_wrap:style(position: absolute !important; top: 50px !important;)
-t1.xtoon365.com,t2.xtoon*.com##.border.rounded-2.w-100.img-fluid
-newtoki*.com##.cursor.to-show
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
