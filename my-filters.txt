@@ -1,30 +1,36 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Structure-Isolated v7.16)
-! Last Modified: 2026-03-11
-! Version: 7.16
+! Title: Custom Adblock Filters (Performance Optimized v7.17)
+! Last Modified: 2026-03-12
+! Version: 7.17
 ! --------------------------------------------------
 
-! === [A. 다모앙(Damoang) - 검증된 규칙 유지] ===
-damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important;)
+! === [A. 다모앙(Damoang) - 로딩 지연 해결 및 여백 제거] ===
+! 1. 네트워크 단에서 광고 스크립트 실행 차단 (5초 지연 해결 핵심)
+||googlesyndication.com^$domain=damoang.net
+||googleads.g.doubleclick.net^$domain=damoang.net
+
+! 2. "Ad로딩중" 문구 및 광고 그리드 압착 (기존 검증 규칙)
+damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important; margin:0 !important;)
 damoang.net##.text-gray-400:has-text(AD):style(display:none !important; height:0px !important;)
+damoang.net##ins.adsbygoogle:style(display:none !important; height:0px !important;)
+
+! 3. 필수 기능 버튼 및 메뉴 보호 (회귀 방지 유지)
 @@||damoang.net##.fixed-bottom
 @@||damoang.net##.btn-write
+@@||damoang.net##.btn-report
 @@||damoang.net##.text-xs.font-bold.text-gray-500:has-text(작성자 최근 활동)
 
-! === [B. 보배드림 & 보배링크 - 검증된 규칙 유지] ===
+! === [B. 보배드림 & 보배링크 - 상단 밀착 유지] ===
 m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):style(display:none !important; height:0px !important;)
 m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important;)
 m.bobaedream.co.kr,bobaelink*.xyz##.content:style(margin-top: 0px !important; padding-top: 0px !important;)
 
-! === [D. 조아툰(Joatoon) - 본문 복구 및 상단 광고 정밀 제거] ===
-! 전체를 날리던 div:has 규칙 삭제 -> 광고 이미지 요소만 직접 정밀 타겟팅
+! === [D. 조아툰(Joatoon) - 이미지 정밀 차단 유지] ===
 joatoon*.com##img.object-cover
 joatoon*.com##.top-banner, joatoon*.com##.main-banner
-! 광고 이미지 클릭용 투명 레이어 및 잔여 여백 제거
 joatoon*.com##a:has(> img.object-cover):style(display:none !important; height:0px !important;)
-joatoon*.com##header + div:style(margin-top:0px !important; padding-top:0px !important;)
 
-! === [C. 공통 및 기타 커뮤니티 정밀 차단] ===
+! === [C. 공통 및 기타 최적화] ===
 joosomoa*.com,xn--365-*.com,jusokok*.com##section:has(img[src*="wixstatic"]):not(:has(span))
 mingky*.net,tokyohot*.com,fdd-01.com,bampt*.com,19yang*.com,sexflix*.com##img[src*=".gif"]
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
