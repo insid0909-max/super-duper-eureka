@@ -1,29 +1,28 @@
 [Adblock Plus 2.0]
-! Title: Custom Adblock Filters (Emergency Fix v7.19)
+! Title: Custom Adblock Filters (Structure-Isolated v7.20)
 ! Last Modified: 2026-03-12
-! Version: 7.19
+! Version: 7.20
 ! --------------------------------------------------
 
-! === [A. 다모앙(Damoang) - 접속 복구 및 상단 광고 박멸] ===
-! 1. 광고 스크립트 차단으로 5초 지연 방지 (유지)
+! === [A. 다모앙(Damoang) - 로딩 점선 박스 및 지연 제거] ===
+! 1. 알려주신 정밀 경로: 광고 로딩 중 나타나는 점선 테두리 박스 완전 삭제
+damoang.net##.damoang-banner > .dark\:bg-slate-800\/50.dark\:border-slate-600.bg-slate-50\/50.border-slate-300.border-dashed.border-2.rounded-lg.justify-center.items-center.flex:style(display:none !important; height:0px !important; margin:0 !important; padding:0 !important;)
+damoang.net##div.mb-6 > .plugin-slot > .plugin-slot-item > .damoang-banner > .dark\:bg-slate-800\/50.dark\:border-slate-600.bg-slate-50\/50.border-slate-300.border-dashed.border-2.rounded-lg.justify-center.items-center.flex:style(display:none !important; height:0px !important;)
+
+! 2. 광고 스크립트 차단으로 5초 대기 현상 방지
 ||googlesyndication.com^$domain=damoang.net
 ||googleads.g.doubleclick.net^$domain=damoang.net
 
-! 2. [복구] 사이트 전체를 날리던 위험한 규칙 삭제 및 정밀 타겟팅으로 변경
-! 상단 광고가 들어가는 고정 클래스만 조준
-damoang.net##.ad-unit:style(display:none !important; height:0px !important;)
-damoang.net##.ad-area:style(display:none !important; height:0px !important;)
-damoang.net##.grid.grid-cols-1.gap-4.sm\:grid-cols-3.mb-6:style(display:none !important; height:0px !important;)
+! 3. 기타 광고 잔여 영역 압착
+damoang.net##.ad-unit, damoang.net##.ad-area
+damoang.net##.text-gray-400:has-text(AD):style(display:none !important; height:0px !important;)
 
-! 3. 'AD' 문구만 투명하게 처리 (전체 div 차단 방지)
-damoang.net##.text-gray-400:has-text(AD):style(visibility:hidden !important; height:0px !important;)
-
-! 4. 필수 기능 보호 (글쓰기, 신고 버튼 등 유지)
+! 4. 필수 기능 보호 (글쓰기, 신고 버튼 등 화이트리스트)
 @@||damoang.net##.fixed-bottom
 @@||damoang.net##.btn-write
 @@||damoang.net##.btn-report
 
-! === [B. 보배드림 & D. 조아툰 - 기존 성공 규칙 유지] ===
+! === [B. 보배드림 & D. 조아툰 - 성공 규칙 유지 (회귀 방지)] ===
 m.bobaedream.co.kr,bobaelink*.xyz##.wrap > div:nth-of-type(1):style(display:none !important; height:0px !important;)
 m.bobaedream.co.kr,bobaelink*.xyz##.upAdBox:style(display:none !important; height:0px !important;)
 joatoon*.com##img.object-cover
