@@ -1,12 +1,13 @@
 // ==UserScript==
-// @name         Universal Webtoon Optimizer
+// @name         Universal Webtoon Optimizer (Final)
 // @namespace    http://tampermonkey.net/
-// @version      1.5
-// @description  뉴토끼, 마나토끼 등 유사 사이트 이미지 로딩 및 메모리 최적화
-// @match        *://newtoki*/*
-// @match        *://manatoki*/*
-// @match        *://booktoki*/*
-// @match        *://copytoon*/*
+// @version      2.0
+// @description  이미지 로딩 최적화, 메모리 절약 및 레이아웃 흔들림 방지
+// @author       Gemini-Refined
+// @match        *://*.newtoki*/*
+// @match        *://*.manatoki*/*
+// @match        *://*.booktoki*/*
+// @match        *://*.copytoon*/*
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
@@ -14,104 +15,108 @@
 (function () {
     'use strict';
 
-    // ─── 0. 호스트 기반 1차 필터 ────────────────────────────────────────
-    const host = location.hostname;
-    const isSupportedHost =
-        /newtoki|manatoki|booktoki|copytoon/.test(host);
-
-    if (!isSupportedHost) return;
-
-    // ─── 1. 사이트 유효성 검사 (구조 기반 2차 필터) ────────────────────
-    const isValidSite = () => {
-        // 뷰어 고유 구조가 없으면 즉시 종료
-        return (
-            document.querySelector('.view-wrap') ||
-            document.querySelector('#toon-content') ||
-            document.querySelector('.webtoon-img-wrap')
-        );
+    // ─── 1. 전역 설정 및 스타일 주입 ───────────────────────────────────
+    const CONFIG = {
+        lazyKeys: ['src', 'lazy', 'original', 'imgSrc', 'path', 'file', 'view'],
+        rootMargin: '800px', // 화면 밖 800px 지점부터 미리 로딩 시작
+        minHeight: '400px'   // 로딩 전 이미지 영역 확보 (레이아웃 튐 방지)
     };
 
-    // ─── 2. 이미지 최적화 ───────────────────────────────────────────────
-    const optimizeImg = (img) => {
-        if (!img || img.dataset.optimized) return;
-        if (!img.src && !img.dataset.src && !img.dataset.lazy && !img.currentSrc) {
-            return;
+    const injectGlobalStyle = () => {
+        if (document.getElementById('webtoon-opt-style')) return;
+        const style = document.createElement('style');
+        style.id = 'webtoon-opt-style';
+        style.textContent = `
+            img[data-optimized="true"] {
+                display: block !important;
+                margin: 10px auto !important;
+                max-width: 100% !important;
+                height: auto !important;
+                background-color: #1a1a1a; /* 로딩 전 배경색 */
+                content-visibility: auto;  /* 브라우저 렌더링 최적화 */
+            }
+        `;
+        document.head.appendChild(style);
+    };
+
+    // ─── 2. 이미지 최적화 핵심 로직 ──────────────────────────────────────
+    const resolveAndOptimize = (img) => {
+        if (img.dataset.optimized === 'true') return;
+
+        // 적절한 원본 소스 찾기
+        let targetSrc = null;
+        for (const key of CONFIG.lazyKeys) {
+            const val = img.dataset[key] || img.getAttribute('data-' + key);
+            if (val) {
+                targetSrc = val;
+                break;
+            }
         }
 
-        // 모든 컷을 즉시 로딩 (초기 대역폭 증가 가능성 있음)
-        img.loading = 'eager';
-        img.decoding = 'async';
-
-        img.style.display = 'block';
-        img.style.margin = '0 auto';
-        img.style.maxWidth = '100%';
-        img.style.height = 'auto';
-
-        img.dataset.optimized = 'true';
+        if (targetSrc) {
+            // 상대 경로 및 프로토콜 누락 대응
+            if (targetSrc.startsWith('//')) targetSrc = location.protocol + targetSrc;
+            
+            img.src = targetSrc;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.style.minHeight = CONFIG.minHeight;
+            img.dataset.optimized = 'true';
+        }
     };
 
-    // ─── 3. MutationObserver (디바운스 적용) ──────────────────────────
-    let debounceTimer = null;
-    let observer = null;
+    // ─── 3. Intersection Observer (가시성 기반 로딩) ──────────────────
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                resolveAndOptimize(entry.target);
+                io.unobserve(entry.target); // 로딩 시작 후 관찰 해제
+            }
+        });
+    }, { rootMargin: CONFIG.rootMargin });
 
-    const processMutations = (mutations) => {
-        for (let i = 0; i < mutations.length; i++) {
-            const added = mutations[i].addedNodes;
-            if (!added || !added.length) continue;
-
-            for (let j = 0; j < added.length; j++) {
-                const node = added[j];
-
-                // 직접 IMG인 경우
-                if (node.nodeType === 1 && node.tagName === 'IMG') {
-                    optimizeImg(node);
-                    continue;
-                }
-
-                // 하위에 IMG가 있는 컨테이너인 경우
-                if (node.nodeType === 1) {
-                    const imgs = node.getElementsByTagName('img');
-                    for (let k = 0; k < imgs.length; k++) {
-                        optimizeImg(imgs[k]);
+    // ─── 4. Mutation Observer (동적 로딩 대응) ────────────────────────
+    let rSample;
+    const observer = new MutationObserver((mutations) => {
+        if (rSample) cancelAnimationFrame(rSample);
+        rSample = requestAnimationFrame(() => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType !== 1) continue;
+                    if (node.tagName === 'IMG') {
+                        io.observe(node);
+                    } else {
+                        node.querySelectorAll('img').forEach(img => io.observe(img));
                     }
                 }
             }
-        }
-    };
-
-    const mutationCallback = (mutations) => {
-        if (!mutations || !mutations.length) return;
-        if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            processMutations(mutations);
-        }, 100);
-    };
-
-    // ─── 4. 초기화 및 옵저버 관리 ─────────────────────────────────────
-    const init = () => {
-        if (!document.body) return;
-
-        if (!isValidSite()) return;
-
-        // 초기 로딩 시 이미 존재하는 IMG 최적화
-        const initialImgs = document.getElementsByTagName('img');
-        for (let i = 0; i < initialImgs.length; i++) {
-            optimizeImg(initialImgs[i]);
-        }
-
-        observer = new MutationObserver(mutationCallback);
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
         });
+    });
 
-        // 탭 비활성화 시 옵저버 부담을 느끼면 아래처럼 추가도 가능
-        // document.addEventListener('visibilitychange', () => {
-        //     if (document.hidden) observer.disconnect();
-        //     else observer.observe(document.body, { childList: true, subtree: true });
-        // });
+    // ─── 5. 초기화 및 가시성 관리 ──────────────────────────────────────
+    const init = () => {
+        const isSupportedHost = /newtoki|manatoki|booktoki|copytoon/.test(location.hostname);
+        if (!isSupportedHost) return;
+
+        injectGlobalStyle();
+
+        // 기존 이미지 관찰 시작
+        document.querySelectorAll('img').forEach(img => io.observe(img));
+
+        // 변화 감지 시작
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // 탭 비활성화 시 리소스 절약
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                observer.disconnect();
+            } else {
+                observer.observe(document.body, { childList: true, subtree: true });
+            }
+        });
     };
 
+    // 실행 시점 제어
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init, { once: true });
     } else {
