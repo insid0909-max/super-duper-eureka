@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         통합 우클릭 해제 (네이버 블로그 완벽 대응)
 // @namespace    http://tampermonkey.net/
-// @version      4.4
+// @version      4.5
 // @description  네이버 블로그 iframe 포함 모든 사이트 우클릭/복사 해제
 // @author       UserScript
 // @match        *://*/*
@@ -23,17 +23,27 @@
 (function() {
     'use strict';
 
-    // 1. 이벤트 핸들러 — return true 제거, stopPropagation만 수행
+    // 1. 이벤트 핸들러
     const clearEvents = (e) => {
         e.stopPropagation();
         if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     };
 
-    // 2. mousedown/mouseup 제거 — UI 부작용 방지
+    // 2. 대상 이벤트
     const events = ['contextmenu', 'copy', 'selectstart', 'dragstart'];
 
     // 3. WeakSet으로 중복 등록 방지
     const applied = new WeakSet();
+
+    // 4. 유니콘 프로 관련 iframe 판별
+    const isUnicornFrame = (iframe) => {
+        const src = iframe.src || '';
+        const id = iframe.id || '';
+        const cls = iframe.className || '';
+        return ['unicorn', 'adguard', 'ublock', 'adblock'].some(keyword =>
+            src.includes(keyword) || id.includes(keyword) || cls.includes(keyword)
+        );
+    };
 
     const applyToDoc = (doc) => {
         if (applied.has(doc)) return;
@@ -43,7 +53,7 @@
             doc.addEventListener(event, clearEvents, true);
         });
 
-        // CSS 강제 주입 (중복 방지는 WeakSet이 커버하므로 styleId 체크 유지)
+        // CSS 강제 주입 — pointer-events 제거로 유니콘 프로 UI 충돌 방지
         const styleId = 'unlock-css-v4';
         if (!doc.getElementById(styleId)) {
             const style = doc.createElement('style');
@@ -54,21 +64,21 @@
                     -moz-user-select: text !important;
                     user-select: text !important;
                     -webkit-touch-callout: default !important;
-                    pointer-events: auto !important;
                 }
             `;
             (doc.head || doc.documentElement).appendChild(style);
         }
     };
 
-    // 4. 초기 실행
+    // 5. 초기 실행
     applyToDoc(document);
 
-    // 5. 동적 로딩 및 iframe 대응 (1,500ms 간격)
+    // 6. 동적 로딩 및 iframe 대응 — 유니콘 프로 iframe 제외
     setInterval(() => {
-        applyToDoc(document); // WeakSet으로 중복 처리 없음
+        applyToDoc(document);
         document.querySelectorAll('iframe').forEach(iframe => {
             try {
+                if (isUnicornFrame(iframe)) return; // 유니콘 프로 iframe 건너뜀
                 if (iframe.contentDocument) {
                     applyToDoc(iframe.contentDocument);
                 }
