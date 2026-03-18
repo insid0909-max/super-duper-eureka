@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name         Universal Webtoon Optimizer (Pro Structure)
-// @version      3.0
-// @description  VRAM 최적화, 네트워크 큐 우선순위 제어 및 안티-프리즈 공학 적용
+// @name         Universal Webtoon & Video Optimizer (Integrated)
+// @version      4.0
+// @description  VRAM 최적화 + 동영상 레이아웃 튐 방지 (보배드림 대응)
 // @match        *://*.newtoki*/*
 // @match        *://*.manatoki*/*
 // @match        *://*.booktoki*/*
 // @match        *://*.copytoon*/*
+// @match        *://*.bobaedream.co.kr/*
 // @run-at       document-start
 // @grant        none
 // ==/UserScript==
@@ -14,13 +15,14 @@
     'use strict';
 
     const PRO_CONFIG = {
-        threshold: 1.5, // 화면 높이의 1.5배 지점에서 미리 로드
-        vramReclaim: true, // 화면에서 멀어지면 메모리 해제
-        maxConcurrent: 5,  // 동시 접속 우선순위 제어 보조
-        selectors: ['.view-wrap img', '#toon-content img', '.webtoon-img-wrap img', 'img[data-src]']
+        threshold: 1.5, 
+        vramReclaim: true,
+        videoRatio: "16 / 9",
+        selectors: ['.view-wrap img', '#toon-content img', '.webtoon-img-wrap img', 'img[data-src]'],
+        videoSelectors: 'video, .video-js, .vjs-tech, iframe[src*="youtube"], .video-container, .vjs-poster'
     };
 
-    // 1. 메모리 효율을 위한 가상 이미지 관리자
+    // 1. 메모리 및 이미지 관리자
     class ImageManager {
         constructor() {
             this.observer = new IntersectionObserver(this.handleIntersect.bind(this), {
@@ -34,7 +36,7 @@
                 if (entry.isIntersecting) {
                     this.load(img);
                 } else if (PRO_CONFIG.vramReclaim) {
-                    this.unload(img); // 메모리 확보를 위한 언로드
+                    this.unload(img);
                 }
             });
         }
@@ -49,9 +51,8 @@
         }
 
         unload(img) {
-            // 완전히 보이지 않게 된 지 오래된 이미지는 낮은 해상도나 빈 값으로 치환하여 VRAM 절약
             if (img.dataset.loaded === "true" && img.getBoundingClientRect().top > window.innerHeight * 3) {
-                // 선택적 구현: img.src = ''; (다시 로드해야 하는 트레이드오프 발생)
+                // 필요시 img.src = ''; 로 VRAM 강제 해제 가능
             }
         }
 
@@ -62,8 +63,27 @@
 
     const manager = new ImageManager();
 
-    // 2. 고성능 돔 스캔 (TreeWalker 활용 - querySelector보다 빠름)
+    // 2. 동영상 레이아웃 강제 고정 함수
+    const fixVideoLayout = (root) => {
+        const targets = root.querySelectorAll ? root.querySelectorAll(PRO_CONFIG.videoSelectors) : [];
+        targets.forEach(el => {
+            if (el.dataset.layoutFixed) return;
+            el.style.setProperty('aspect-ratio', PRO_CONFIG.videoRatio, 'important');
+            el.style.setProperty('width', '100%', 'important');
+            el.style.setProperty('height', 'auto', 'important');
+            el.style.setProperty('max-height', '85vh', 'important');
+            el.dataset.layoutFixed = "true";
+        });
+    };
+
+    // 3. 고성능 스캔 (TreeWalker)
     const scanAndObserve = (root) => {
+        if (!root || root.nodeType !== 1) return;
+        
+        // 동영상 체크
+        fixVideoLayout(root);
+
+        // 이미지 체크
         const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, {
             acceptNode: (node) => node.tagName === 'IMG' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
         });
@@ -74,7 +94,7 @@
         }
     };
 
-    // 3. 실행 엔진
+    // 4. 실행 엔진 (MutationObserver)
     const engine = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
             mutation.addedNodes.forEach(node => {
@@ -84,11 +104,21 @@
     });
 
     const init = () => {
-        // 스타일 주입 (리플로우 최적화)
+        // 공통 스타일 주입 (Reflow 최적화 + Layout Shift 방지)
         const style = document.createElement('style');
         style.textContent = `
             img { transition: opacity 0.3s; will-change: transform; }
             img:not([src]) { opacity: 0; }
+            
+            /* 동영상 크기 튐 방지 핵심 CSS */
+            ${PRO_CONFIG.videoSelectors} {
+                aspect-ratio: ${PRO_CONFIG.videoRatio} !important;
+                width: 100% !important;
+                height: auto !important;
+                max-width: 100% !important;
+                object-fit: contain !important;
+                background-color: #000 !important;
+            }
         `;
         document.head.appendChild(style);
 
@@ -96,6 +126,7 @@
         engine.observe(document.body, { childList: true, subtree: true });
     };
 
+    // 실행 시점 제어
     if (document.readyState === 'loading') {
         window.addEventListener('DOMContentLoaded', init);
     } else {
