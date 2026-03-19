@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Universal Webtoon Optimizer
+// @name         Universal Webtoon Optimizer & Auto Resume
 // @namespace    http://tampermonkey.net/
-// @version      2.1
-// @description  뉴토끼, 마나토끼 등 유사 사이트 이미지 로딩 최적화
+// @version      2.2
+// @description  이미지 로딩 최적화 및 마지막 읽은 위치 기억 (이어보기)
 // @match        *://newtoki*/*
 // @match        *://manatoki*/*
 // @match        *://booktoki*/*
@@ -14,10 +14,11 @@
 (function () {
     'use strict';
 
-    // ─── 0. 호스트 1차 필터 ─────────────────────────────────────────────
     if (!/newtoki|manatoki|booktoki|copytoon/.test(location.hostname)) return;
 
-    // ─── 1. 사이트 구조 2차 필터 ────────────────────────────────────────
+    // 저장 키 생성 (웹툰 주소별로 고유 키 생성)
+    const SAVE_KEY = `uwt_scroll_${location.pathname}`;
+
     const isValidSite = () =>
         !!(
             document.querySelector('.view-wrap')       ||
@@ -25,7 +26,23 @@
             document.querySelector('.webtoon-img-wrap')
         );
 
-    // ─── 2. 전역 스타일 주입 ────────────────────────────────────────────
+    // --- [추가] 스크롤 위치 저장 함수 ---
+    const saveScrollPosition = () => {
+        if (window.scrollY > 0) {
+            localStorage.setItem(SAVE_KEY, window.scrollY);
+        }
+    };
+
+    // --- [추가] 스크롤 위치 복구 함수 ---
+    const restoreScrollPosition = () => {
+        const savedPos = localStorage.getItem(SAVE_KEY);
+        if (savedPos) {
+            // 이미지 로딩 시간을 고려하여 약간의 지연 후 이동 (혹은 즉시 이동)
+            window.scrollTo({ top: parseInt(savedPos), behavior: 'instant' });
+            console.log(`[UWT] 복구된 위치: ${savedPos}px`);
+        }
+    };
+
     const injectStyle = () => {
         if (document.getElementById('uwt-style')) return;
         const style = document.createElement('style');
@@ -36,26 +53,20 @@
                 margin: 0 auto !important;
                 max-width: 100% !important;
                 height: auto !important;
+                min-height: 200px; /* 로딩 전 높이 확보 */
             }
         `;
         (document.head || document.documentElement).appendChild(style);
     };
 
-    // ─── 3. lazy src 교체 ───────────────────────────────────────────────
     const resolveLazySrc = (img) => {
-        const lazySrc =
-            img.dataset.src      ||
-            img.dataset.lazy     ||
-            img.dataset.original ||
-            img.dataset.imgSrc   ||
-            null;
+        const lazySrc = img.dataset.src || img.dataset.lazy || img.dataset.original || img.dataset.imgSrc || null;
         if (!lazySrc) return false;
         const rawSrc = img.getAttribute('src');
         if (!rawSrc || rawSrc !== lazySrc) img.src = lazySrc;
         return true;
     };
 
-    // ─── 4. 이미지 최적화 ───────────────────────────────────────────────
     const optimizeImg = (img) => {
         if (!img || img.dataset.optimized) return;
         const resolved = resolveLazySrc(img);
@@ -66,7 +77,6 @@
         img.dataset.optimized = 'true';
     };
 
-    // ─── 5. MutationObserver ────────────────────────────────────────────
     const pendingNodes = new Set();
     let debounceTimer = null;
     let observer = null;
@@ -101,7 +111,6 @@
         debounceTimer = setTimeout(processNodes, 100);
     };
 
-    // ─── 6. 옵저버 연결/해제 ────────────────────────────────────────────
     const observerOptions = {
         childList: true,
         subtree: true,
@@ -113,7 +122,6 @@
         if (document.body) observer.observe(document.body, observerOptions);
     };
 
-    // ─── 7. 초기화 ──────────────────────────────────────────────────────
     let initialized = false;
 
     const init = () => {
@@ -128,8 +136,24 @@
             optimizeImg(img);
         }
 
+        // --- [추가] 초기화 시 스크롤 복구 실행 ---
+        // 이미지가 어느 정도 그려진 후 이동하기 위해 약간의 지연을 줍니다.
+        setTimeout(restoreScrollPosition, 500);
+
+        // --- [추가] 스크롤 이벤트 리스너 (저장) ---
+        let scrollTimer;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(saveScrollPosition, 500); // 0.5초 멈췄을 때 저장
+        }, { passive: true });
+
         document.addEventListener('visibilitychange', () => {
-            document.hidden ? observer.disconnect() : connectObserver();
+            if (document.hidden) {
+                saveScrollPosition(); // 탭을 전환하거나 앱을 내릴 때 즉시 저장
+                observer.disconnect();
+            } else {
+                connectObserver();
+            }
         });
     };
 
