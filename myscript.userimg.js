@@ -1,85 +1,140 @@
 // ==UserScript==
-// @name         Universal Webtoon & Video Optimizer (Extreme Fix)
-// @version      4.5
-// @description  VRAM 최적화 + 동영상 레이아웃 튐 현상 완전 봉쇄
-// @match        *://*.newtoki*/*
-// @match        *://*.manatoki*/*
-// @match        *://*.booktoki*/*
-// @match        *://*.bobaedream.co.kr/*
-// @run-at       document-start
+// @name         Universal Webtoon Optimizer
+// @namespace    http://tampermonkey.net/
+// @version      2.1
+// @description  뉴토끼, 마나토끼 등 유사 사이트 이미지 로딩 최적화
+// @match        *://newtoki*/*
+// @match        *://manatoki*/*
+// @match        *://booktoki*/*
+// @match        *://copytoon*/*
 // @grant        none
+// @run-at       document-start
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
-    const CONFIG = {
-        videoRatio: "16 / 9",
-        videoSelectors: 'video, .video-js, .vjs-tech, iframe[src*="youtube"], .video-container, .vjs-poster, div[id*="video"]'
-    };
+    // ─── 0. 호스트 1차 필터 ─────────────────────────────────────────────
+    if (!/newtoki|manatoki|booktoki|copytoon/.test(location.hostname)) return;
 
-    // [핵심] 페이지 로딩 시작 즉시 스타일 주입 (가장 빠른 시점)
-    const injectFlashFix = () => {
+    // ─── 1. 사이트 구조 2차 필터 ────────────────────────────────────────
+    const isValidSite = () =>
+        !!(
+            document.querySelector('.view-wrap')       ||
+            document.querySelector('#toon-content')    ||
+            document.querySelector('.webtoon-img-wrap')
+        );
+
+    // ─── 2. 전역 스타일 주입 ────────────────────────────────────────────
+    const injectStyle = () => {
+        if (document.getElementById('uwt-style')) return;
         const style = document.createElement('style');
+        style.id = 'uwt-style';
         style.textContent = `
-            ${CONFIG.videoSelectors} {
-                aspect-ratio: ${CONFIG.videoRatio} !important;
-                width: 100% !important;
-                height: auto !important;
-                min-height: 200px !important; /* 최소 높이 확보로 0->확대 현상 방지 */
+            img.uwt-img {
+                display: block !important;
+                margin: 0 auto !important;
                 max-width: 100% !important;
-                object-fit: contain !important;
-                background-color: #000 !important;
+                height: auto !important;
             }
         `;
-        document.documentElement.appendChild(style);
+        (document.head || document.documentElement).appendChild(style);
     };
-    injectFlashFix();
 
-    // 기존 이미지 매니저 클래스 (VRAM 최적화용)
-    class ImageManager {
-        constructor() {
-            this.observer = new IntersectionObserver(this.handleIntersect.bind(this), {
-                rootMargin: `150% 0px`
-            });
-        }
-        handleIntersect(entries) {
-            entries.forEach(entry => {
-                const img = entry.target;
-                if (entry.isIntersecting) {
-                    const realSrc = img.dataset.src || img.dataset.file || img.getAttribute('data-original');
-                    if (realSrc && img.src !== realSrc) img.src = realSrc;
+    // ─── 3. lazy src 교체 ───────────────────────────────────────────────
+    const resolveLazySrc = (img) => {
+        const lazySrc =
+            img.dataset.src      ||
+            img.dataset.lazy     ||
+            img.dataset.original ||
+            img.dataset.imgSrc   ||
+            null;
+        if (!lazySrc) return false;
+        const rawSrc = img.getAttribute('src');
+        if (!rawSrc || rawSrc !== lazySrc) img.src = lazySrc;
+        return true;
+    };
+
+    // ─── 4. 이미지 최적화 ───────────────────────────────────────────────
+    const optimizeImg = (img) => {
+        if (!img || img.dataset.optimized) return;
+        const resolved = resolveLazySrc(img);
+        if (!resolved && !img.getAttribute('src') && !img.currentSrc) return;
+        img.loading = 'eager';
+        img.decoding = 'async';
+        img.classList.add('uwt-img');
+        img.dataset.optimized = 'true';
+    };
+
+    // ─── 5. MutationObserver ────────────────────────────────────────────
+    const pendingNodes = new Set();
+    let debounceTimer = null;
+    let observer = null;
+
+    const processNodes = () => {
+        debounceTimer = null;
+        const nodes = [...pendingNodes];
+        pendingNodes.clear();
+        for (const node of nodes) {
+            if (node.tagName === 'IMG') {
+                optimizeImg(node);
+            } else {
+                for (const img of node.getElementsByTagName('img')) {
+                    optimizeImg(img);
                 }
-            });
+            }
         }
-        observe(el) { this.observer.observe(el); }
-    }
-    const manager = new ImageManager();
+    };
 
-    // 동적 요소 감시 엔진
-    const engine = new MutationObserver((mutations) => {
+    const mutationCallback = (mutations) => {
         for (const mutation of mutations) {
-            mutation.addedNodes.forEach(node => {
-                if (node.nodeType === 1) {
-                    // 동영상 체크
-                    if (node.matches && node.matches(CONFIG.videoSelectors)) {
-                        node.style.aspectRatio = CONFIG.videoRatio;
-                    }
-                    // 이미지 체크
-                    if (node.tagName === 'IMG') manager.observe(node);
-                    const imgs = node.querySelectorAll('img');
-                    imgs.forEach(img => manager.observe(img));
+            if (mutation.type === 'childList') {
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType === 1) pendingNodes.add(node);
                 }
-            });
+            }
+            if (mutation.type === 'attributes' && mutation.target.nodeType === 1) {
+                pendingNodes.add(mutation.target);
+            }
         }
-    });
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(processNodes, 100);
+    };
+
+    // ─── 6. 옵저버 연결/해제 ────────────────────────────────────────────
+    const observerOptions = {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['data-src', 'data-lazy', 'data-original', 'data-img-src'],
+    };
+
+    const connectObserver = () => {
+        if (document.body) observer.observe(document.body, observerOptions);
+    };
+
+    // ─── 7. 초기화 ──────────────────────────────────────────────────────
+    let initialized = false;
 
     const init = () => {
-        engine.observe(document.body, { childList: true, subtree: true });
+        if (initialized || !document.body || !isValidSite()) return;
+        initialized = true;
+
+        injectStyle();
+        observer = new MutationObserver(mutationCallback);
+        connectObserver();
+
+        for (const img of document.getElementsByTagName('img')) {
+            optimizeImg(img);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            document.hidden ? observer.disconnect() : connectObserver();
+        });
     };
 
     if (document.readyState === 'loading') {
-        window.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', init, { once: true });
     } else {
         init();
     }
