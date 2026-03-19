@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Universal Webtoon Optimizer & Auto Resume
 // @namespace    http://tampermonkey.net/
-// @version      2.2
-// @description  이미지 로딩 최적화 및 마지막 읽은 위치 기억 (이어보기)
+// @version      2.5
+// @description  이미지 로딩 최적화 + 마지막 읽은 위치 기억 (최대 300개 기록 유지)
 // @match        *://newtoki*/*
 // @match        *://manatoki*/*
 // @match        *://booktoki*/*
@@ -16,8 +16,10 @@
 
     if (!/newtoki|manatoki|booktoki|copytoon/.test(location.hostname)) return;
 
-    // 저장 키 생성 (웹툰 주소별로 고유 키 생성)
-    const SAVE_KEY = `uwt_scroll_${location.pathname}`;
+    // --- 설정 값 ---
+    const PREFIX = 'uwt_scroll_';
+    const SAVE_KEY = `${PREFIX}${location.pathname}`;
+    const MAX_HISTORY = 300; // 최대 저장 기록 개수
 
     const isValidSite = () =>
         !!(
@@ -26,20 +28,44 @@
             document.querySelector('.webtoon-img-wrap')
         );
 
-    // --- [추가] 스크롤 위치 저장 함수 ---
+    // --- [통합] 스크롤 위치 저장 및 데이터 관리 ---
     const saveScrollPosition = () => {
-        if (window.scrollY > 0) {
-            localStorage.setItem(SAVE_KEY, window.scrollY);
+        const currentScroll = window.scrollY;
+        if (currentScroll > 0) {
+            // 현재 위치와 시간 저장
+            const data = {
+                pos: currentScroll,
+                time: Date.now()
+            };
+            localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+            cleanOldHistory();
         }
     };
 
-    // --- [추가] 스크롤 위치 복구 함수 ---
+    // 오래된 기록 삭제 (MAX_HISTORY 기준)
+    const cleanOldHistory = () => {
+        const keys = Object.keys(localStorage).filter(k => k.startsWith(PREFIX));
+        if (keys.length > MAX_HISTORY) {
+            const history = keys.map(k => ({ key: k, time: JSON.parse(localStorage.getItem(k)).time || 0 }));
+            // 시간순 정렬 후 가장 오래된 것 삭제
+            history.sort((a, b) => a.time - b.time);
+            localStorage.removeItem(history[0].key);
+        }
+    };
+
+    // --- [통합] 스크롤 위치 복구 ---
     const restoreScrollPosition = () => {
-        const savedPos = localStorage.getItem(SAVE_KEY);
-        if (savedPos) {
-            // 이미지 로딩 시간을 고려하여 약간의 지연 후 이동 (혹은 즉시 이동)
-            window.scrollTo({ top: parseInt(savedPos), behavior: 'instant' });
-            console.log(`[UWT] 복구된 위치: ${savedPos}px`);
+        const savedData = localStorage.getItem(SAVE_KEY);
+        if (savedData) {
+            try {
+                const { pos } = JSON.parse(savedData);
+                if (pos) {
+                    window.scrollTo({ top: parseInt(pos), behavior: 'instant' });
+                    console.log(`[UWT] 복구 완료: ${pos}px`);
+                }
+            } catch (e) {
+                localStorage.removeItem(SAVE_KEY);
+            }
         }
     };
 
@@ -53,7 +79,7 @@
                 margin: 0 auto !important;
                 max-width: 100% !important;
                 height: auto !important;
-                min-height: 200px; /* 로딩 전 높이 확보 */
+                min-height: 500px; /* 복구 정확도를 위해 최소 높이 확보 */
             }
         `;
         (document.head || document.documentElement).appendChild(style);
@@ -111,15 +137,13 @@
         debounceTimer = setTimeout(processNodes, 100);
     };
 
-    const observerOptions = {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['data-src', 'data-lazy', 'data-original', 'data-img-src'],
-    };
-
     const connectObserver = () => {
-        if (document.body) observer.observe(document.body, observerOptions);
+        if (document.body) observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['data-src', 'data-lazy', 'data-original', 'data-img-src'],
+        });
     };
 
     let initialized = false;
@@ -136,20 +160,21 @@
             optimizeImg(img);
         }
 
-        // --- [추가] 초기화 시 스크롤 복구 실행 ---
-        // 이미지가 어느 정도 그려진 후 이동하기 위해 약간의 지연을 줍니다.
-        setTimeout(restoreScrollPosition, 500);
+        // --- 초기 접속 시 위치 복구 ---
+        // 웹툰 이미지가 어느 정도 불러와진 뒤 이동해야 정확합니다.
+        setTimeout(restoreScrollPosition, 600);
 
-        // --- [추가] 스크롤 이벤트 리스너 (저장) ---
+        // --- 이벤트 리스너: 스크롤 멈출 때 저장 ---
         let scrollTimer;
         window.addEventListener('scroll', () => {
             clearTimeout(scrollTimer);
-            scrollTimer = setTimeout(saveScrollPosition, 500); // 0.5초 멈췄을 때 저장
+            scrollTimer = setTimeout(saveScrollPosition, 800); 
         }, { passive: true });
 
+        // --- 이벤트 리스너: 앱 종료/탭 전환 시 저장 ---
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                saveScrollPosition(); // 탭을 전환하거나 앱을 내릴 때 즉시 저장
+                saveScrollPosition();
                 observer.disconnect();
             } else {
                 connectObserver();
