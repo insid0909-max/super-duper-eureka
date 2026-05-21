@@ -31,3 +31,6 @@ joatoon*.com##.top-banner, joatoon*.com##.main-banner
 ! === [C. 공통 및 기타 최적화] ===
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
+
+@@||example.com^$generichide
+@@||example.com^$ghide
