@@ -32,5 +32,13 @@ joatoon*.com##.top-banner, joatoon*.com##.main-banner
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
 
-@@||example.com^$generichide
-@@||example.com^$ghide
+sbxh1.com##+js(nobab)
+sbxh1.com##+js(set, fuckAdBlock, undefined)
+sbxh1.com##+js(set, BlockAdBlock, undefined)
+
+sbxh1.com##.adblock-overlay
+sbxh1.com##.anti-adblock
+sbxh1.com##body[style*="overflow:hidden"]
+
+@@||sbxh1.com^$ghide
+@@||sbxh1.com^$generichide
