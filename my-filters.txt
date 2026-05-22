@@ -32,13 +32,8 @@ joatoon*.com##.top-banner, joatoon*.com##.main-banner
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
 
-sbxh1.com##+js(nobab)
-sbxh1.com##+js(set, fuckAdBlock, undefined)
-sbxh1.com##+js(set, BlockAdBlock, undefined)
-
-sbxh1.com##.adblock-overlay
-sbxh1.com##.anti-adblock
-sbxh1.com##body[style*="overflow:hidden"]
-
-@@||sbxh1.com^$ghide
-@@||sbxh1.com^$generichide
+||sbxh1.com/js/ads.js
+||sbxh1.com/assets/js/detector.js
+||sbxh1.com^$script,third-party
+@@||challenges.cloudflare.com^$script,domain=sbxh1.com
+sbxh1.com##script:inject(abort-on-property-read, document.createElement)
