@@ -31,3 +31,146 @@ joatoon*.com##.top-banner, joatoon*.com##.main-banner
 ! === [C. 공통 및 기타 최적화] ===
 ##[src*="casino"], ##[src*="slot"], ##[src*="totosite"]
 ||googletagservices.com^
+
+// ==UserScript==
+// @name         sbxh1.com Anti-Adblock Bypass
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  sbxh1.com 광고차단 감지 우회 및 팝업/오버레이 제거
+// @author       Cik
+// @match        *://sbxh1.com/*
+// @match        *://*.sbxh1.com/*
+// @grant        none
+// @run-at       document-start
+// ==/UserScript==
+
+(function () {
+    'use strict';
+
+    // ── 1. detector.js 로드 차단 ──────────────────────────────
+    // XMLHttpRequest 가로채기
+    const _open = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function (method, url, ...args) {
+        if (typeof url === 'string' && /detector|ads\.js/i.test(url)) {
+            console.log('[bypass] XHR 차단:', url);
+            url = 'about:blank';
+        }
+        return _open.call(this, method, url, ...args);
+    };
+
+    // fetch 가로채기
+    const _fetch = window.fetch;
+    window.fetch = function (input, init) {
+        const url = typeof input === 'string' ? input : (input?.url || '');
+        if (/detector|ads\.js/i.test(url)) {
+            console.log('[bypass] fetch 차단:', url);
+            return Promise.resolve(new Response('', { status: 200 }));
+        }
+        return _fetch.call(this, input, init);
+    };
+
+    // ── 2. Anti-adblock 감지 함수 무력화 ─────────────────────
+    // 광고차단 감지에 흔히 쓰이는 전역 변수/함수 스푸핑
+    Object.defineProperty(window, 'adblockDetected', {
+        get: () => false,
+        set: () => {},
+    });
+    Object.defineProperty(window, 'adBlockDetected', {
+        get: () => false,
+        set: () => {},
+    });
+    Object.defineProperty(window, 'adblock', {
+        get: () => false,
+        set: () => {},
+    });
+
+    // ── 3. document.createElement 훅 – 광고용 엘리먼트 허용 위장 ──
+    // 일부 감지 스크립트는 div 생성 후 offsetHeight 확인
+    const _createElement = document.createElement.bind(document);
+    document.createElement = function (tag, ...args) {
+        const el = _createElement(tag, ...args);
+        if (tag.toLowerCase() === 'div') {
+            Object.defineProperty(el, 'offsetHeight', { get: () => 1 });
+            Object.defineProperty(el, 'offsetWidth',  { get: () => 1 });
+        }
+        return el;
+    };
+
+    // ── 4. DOM 감시 – 팝업/오버레이 동적 제거 ────────────────
+    const POPUP_SELECTORS = [
+        // 클래스 패턴
+        '[class*="adblock"]',
+        '[class*="ad-block"]',
+        '[class*="adblocker"]',
+        '[class*="ad_block"]',
+        '[class*="anti-adblock"]',
+        '[class*="antiadblock"]',
+        '[class*="block-adblock"]',
+        // ID 패턴
+        '[id*="adblock"]',
+        '[id*="ad-block"]',
+        '[id*="adblocker"]',
+        '[id*="anti-adblock"]',
+        // 오버레이/모달 일반
+        '[class*="overlay"]',
+        '[class*="modal-backdrop"]',
+        '[class*="popup-overlay"]',
+    ];
+
+    function removePopups() {
+        POPUP_SELECTORS.forEach(sel => {
+            document.querySelectorAll(sel).forEach(el => {
+                // 배경 어두움(오버레이) 또는 z-index 높은 요소만 제거
+                const style = window.getComputedStyle(el);
+                const zIndex = parseInt(style.zIndex) || 0;
+                const bg = style.backgroundColor;
+                const isOverlay = zIndex > 100 || /rgba\(0.*0.*0/i.test(bg);
+                if (isOverlay) {
+                    el.remove();
+                    console.log('[bypass] 제거:', sel, el);
+                }
+            });
+        });
+
+        // body 스크롤/포인터 잠금 해제
+        document.body.style.setProperty('overflow', 'auto', 'important');
+        document.body.style.setProperty('pointer-events', 'auto', 'important');
+        document.documentElement.style.setProperty('overflow', 'auto', 'important');
+    }
+
+    // DOM 변화 감시
+    const observer = new MutationObserver(() => removePopups());
+
+    // document-start 에서는 body 없을 수 있으므로 ready 대기
+    function startObserver() {
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+        });
+        removePopups();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startObserver);
+    } else {
+        startObserver();
+    }
+
+    // ── 5. 검은 화면(background) 대응 ────────────────────────
+    // body/html 에 직접 걸리는 어두운 배경색 강제 초기화
+    const styleOverride = document.createElement('style');
+    styleOverride.textContent = `
+        html, body {
+            overflow: auto !important;
+            pointer-events: auto !important;
+        }
+        /* z-index 높은 전체 가림 요소 숨김 (광고 실제 요소 제외) */
+        body > div[style*="z-index: 9"],
+        body > div[style*="z-index:9"] {
+            display: none !important;
+        }
+    `;
+    (document.head || document.documentElement).appendChild(styleOverride);
+
+})();
+
