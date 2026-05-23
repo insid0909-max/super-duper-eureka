@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         NewToki & BlackToon Anti-Anti-Adblock Ultimate Engine (v3.0)
+// @name         NewToki & BlackToon Anti-Adblock Bypass Engine (v4.0 Ultimate)
 // @namespace    https://github.com/
-// @version      3.0
-// @description  새로 업데이트된 경고 누수 시스템 및 구글 리디렉션 기능 완벽 파괴
+// @version      4.0
+// @description  로컬스토리지 변조 방지 및 인라인 trip 기능 영구 동결
 // @author       지혁 (AI Collaborator)
 // @match        *://*.sbxh2.com/*
 // @match        *://*.blacktoon*.com/*
@@ -18,51 +18,41 @@
     'use strict';
 
     let isEnabled = GM_getValue("bypass_enabled", true);
-    GM_registerMenuCommand(isEnabled ? "✅ 광고 차단 우회 엔진 켜짐" : "❌ 광고 차단 우회 엔진 꺼짐", function() {
+    GM_registerMenuCommand(isEnabled ? "✅ 광고 차단 우회 엔진 작동 중" : "❌ 광고 차단 우회 엔진 꺼짐", function() {
         GM_setValue("bypass_enabled", !isEnabled);
         location.reload();
     });
 
     if (!isEnabled) return;
 
-    // [강력조치 1] 사이트가 내 브라우저를 구글로 튕겨내려고 할 때(replace/assign) 주소창 납치 차단
-    const rawReplace = window.location.replace;
+    // [핵심 패치 1] 저들이 경고 카운트를 쌓는 localStorage의 접근 권한을 뺏어 상시 0으로 고정
     try {
-        window.location.replace = function(url) {
-            if (url.includes("google.com")) {
-                console.log("➔ 사이트의 구글 리디렉션 기도를 격추했습니다.");
-                return null;
-            }
-            return rawReplace.apply(this, arguments);
+        const originalSetItem = localStorage.setItem;
+        localStorage.setItem = function(key, value) {
+            if (key === "ntk_dev_warn") return originalSetItem.apply(this, [key, "0"]);
+            return originalSetItem.apply(this, arguments);
         };
-    } catch(_) {}
+        const originalGetItem = localStorage.getItem;
+        localStorage.getItem = function(key) {
+            if (key === "ntk_dev_warn") return "0";
+            return originalGetItem.apply(this, arguments);
+        };
+    } catch (_) {}
 
-    // [강력조치 2] 로컬 스토리지 경고 스택 0으로 상시 마비 (차단 누적 방지)
-    try {
-        localStorage.setItem("ntk_dev_warn", "0");
-        Object.defineProperty(localStorage, 'ntk_dev_warn', { value: "0", writable: false });
-    } catch(_) {}
-
-    // [강력조치 3] 새로운 감지 기법인 뷰포트 갭 검사 및 포맷터 함수 무조건 '정상' 처리
-    Object.defineProperty(window, 'viewportLooksOpen', { get: () => false, set: () => {}, configurable: false });
-    Object.defineProperty(window, 'formattersTripped', { get: () => false, set: () => {}, configurable: false });
-
-    // [강력조치 4] Next.js 본문 보안 컴포넌트 원천 바보화
-    const killGates = () => {
+    // [핵심 패치 2] 창을 덮어버리는 오버레이 레이어 및 스크롤 마비 실시간 강제 해제
+    const clearBypassGates = () => {
         window.__ntk_ib_ok = 1;
         window.__ntkDevtoolsPreflight = 1;
-        window.__ntkDevtoolsTripped = "none";
+        window.__ntkDevtoolsTripped = false;
 
         const dummy = function() { return null; };
-        const gates = ['DevToolsBlockerGate', 'DevToolsBlocker', 'AdBlockGuard', 'InitBlockGuard', 'AdminBrowserDisguise', 'checkDevTools', 'trip'];
+        const gates = ['DevToolsBlockerGate', 'DevToolsBlocker', 'AdBlockGuard', 'InitBlockGuard', 'checkDevTools', 'trip'];
         
         gates.forEach(g => {
-            try {
-                Object.defineProperty(window, g, { get: () => dummy, set: () => {}, configurable: false });
-            } catch(_) {}
+            try { window[g] = dummy; } catch(_) {}
         });
 
-        // 눈앞에 팝업창 레이어가 생성되는 즉시 가차 없이 제거
+        // 차단 레이어가 감지되면 흔적도 없이 삭제
         const overlay = document.getElementById("ntk_devtools_overlay");
         if (overlay) {
             overlay.remove();
@@ -71,22 +61,25 @@
         }
     };
 
-    // [강력조치 5] 무한 디버거 빌더 원천 봉쇄
-    const OrigConstructor = Function.prototype.constructor;
-    Function.prototype.constructor = function(...args) {
-        if (args.length > 0 && typeof args[0] === 'string' && (args[0].includes('debugger') || args[0].includes('ntk_devtools'))) {
-            return function() {};
-        }
-        return OrigConstructor.apply(this, args);
-    };
+    // [핵심 패치 3] 구글로 주소창을 날려버리는 팅김 현상 완전 방어
+    try {
+        const originalReplace = window.location.replace;
+        window.location.replace = function(url) {
+            if (url.includes("google.com")) {
+                console.log("➔ 사이트의 강제 리디렉션을 방어했습니다.");
+                return null;
+            }
+            return originalReplace.apply(this, arguments);
+        };
+    } catch(_) {}
 
-    // 즉시 실행 및 문서 로드 시점마다 중첩 가동
-    killGates();
-    const observer = new MutationObserver(() => killGates());
+    // 실행단 가동
+    clearBypassGates();
+    const observer = new MutationObserver(() => clearBypassGates());
     
     document.addEventListener('DOMContentLoaded', () => {
-        killGates();
+        clearBypassGates();
         observer.observe(document.documentElement, { childList: true, subtree: true });
     });
-    window.addEventListener('load', killGates);
+    window.addEventListener('load', clearBypassGates);
 })();
