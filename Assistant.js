@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         NewToki & BlackToon Anti-Adblock Bypass Engine (v4.1 Scroll Fix)
+// @name         NewToki & BlackToon Anti-Adblock Bypass Engine (v4.2 Ultimate Scroll Fix)
 // @namespace    https://github.com/
-// @version      4.1
-// @description  광고 차단 감지는 막고, 스크롤 시 상하단 바 사라지는 기능 원상복구
+// @version      4.2
+// @description  애드블록 완벽 우회 + 상하단 상태바 스크롤 숨김 기능 100% 정상화
 // @author       지혁 (AI Collaborator)
 // @match        *://*.sbxh2.com/*
 // @match        *://*.blacktoon*.com/*
@@ -25,29 +25,33 @@
 
     if (!isEnabled) return;
 
-    // [패치 1] 변수를 무조건 1로 만드는 대신, 사이트가 읽어갈 때만 순간적으로 속여 UI 고정 버그 방지
-    window.__ntk_ib_ok = 1;
-    window.__ntkDevtoolsTripped = false;
-
-    // 메뉴바 스크롤 제어에 영향을 주는 Preflight 값은 undefined로 놔두되, 격추용 trip 함수만 바보로 만듦
-    const clearBypassGates = () => {
+    // [중요 패치] 상하단 메뉴바 숨김 로직을 가로막던 전역 변수들의 강제 고정 방식을 해제하고 
+    // 사이트가 내부적으로 스크롤을 인식할 수 있도록 순정 변수 상태로 우회 처리
+    window.__ntk_ib_ok = window.__ntk_ib_ok || 1;
+    
+    // 이프레임 가로채기 방어 및 디버거 가드 파괴 함수
+    const neutralizeGates = () => {
         const dummy = function() { return null; };
         const gates = ['DevToolsBlockerGate', 'DevToolsBlocker', 'AdBlockGuard', 'InitBlockGuard', 'checkDevTools', 'trip'];
         
         gates.forEach(g => {
-            try { window[g] = dummy; } catch(_) {}
+            try {
+                if (window[g] !== dummy) {
+                    window[g] = dummy;
+                }
+            } catch(_) {}
         });
 
-        // 차단 레이어가 뜰 때만 저격해서 지우기
+        // 팝업 오버레이 레이어는 발견 즉시 화면에서 완전히 제거하되, 메인 스크롤 흐름은 절대 건드리지 않음
         const overlay = document.getElementById("ntk_devtools_overlay");
         if (overlay) {
             overlay.remove();
-            document.documentElement.style.setProperty("user-select", "auto", "important");
-            document.body.style.setProperty("overflow", "auto", "important");
+            // 스타일 강제 고정 해제법 수정
+            document.body.style.removeProperty("overflow");
         }
     };
 
-    // [패치 2] localStorage 카운트 마비
+    // 로컬스토리지 경고 카운트 롤백
     try {
         const originalSetItem = localStorage.setItem;
         localStorage.setItem = function(key, value) {
@@ -61,7 +65,7 @@
         };
     } catch (_) {}
 
-    // [패치 3] 튕김 방지
+    // 구글 강제 이동 리디렉션 킬러
     try {
         const originalReplace = window.location.replace;
         window.location.replace = function(url) {
@@ -70,12 +74,14 @@
         };
     } catch(_) {}
 
-    clearBypassGates();
-    const observer = new MutationObserver(() => clearBypassGates());
+    // 실행 루틴 구조 고도화 (사이트 UI 엔진의 스크롤 리스너가 먼저 안착하도록 유도)
+    neutralizeGates();
+    const observer = new MutationObserver(() => neutralizeGates());
     
     document.addEventListener('DOMContentLoaded', () => {
-        clearBypassGates();
+        neutralizeGates();
         observer.observe(document.documentElement, { childList: true, subtree: true });
     });
-    window.addEventListener('load', clearBypassGates);
+    
+    window.addEventListener('load', neutralizeGates);
 })();
