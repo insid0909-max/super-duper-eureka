@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         NewToki & BlackToon Anti-Adblock Bypass Engine (v4.0 Ultimate)
+// @name         NewToki & BlackToon Anti-Adblock Bypass Engine (v4.1 Scroll Fix)
 // @namespace    https://github.com/
-// @version      4.0
-// @description  로컬스토리지 변조 방지 및 인라인 trip 기능 영구 동결
+// @version      4.1
+// @description  광고 차단 감지는 막고, 스크롤 시 상하단 바 사라지는 기능 원상복구
 // @author       지혁 (AI Collaborator)
 // @match        *://*.sbxh2.com/*
 // @match        *://*.blacktoon*.com/*
@@ -25,7 +25,29 @@
 
     if (!isEnabled) return;
 
-    // [핵심 패치 1] 저들이 경고 카운트를 쌓는 localStorage의 접근 권한을 뺏어 상시 0으로 고정
+    // [패치 1] 변수를 무조건 1로 만드는 대신, 사이트가 읽어갈 때만 순간적으로 속여 UI 고정 버그 방지
+    window.__ntk_ib_ok = 1;
+    window.__ntkDevtoolsTripped = false;
+
+    // 메뉴바 스크롤 제어에 영향을 주는 Preflight 값은 undefined로 놔두되, 격추용 trip 함수만 바보로 만듦
+    const clearBypassGates = () => {
+        const dummy = function() { return null; };
+        const gates = ['DevToolsBlockerGate', 'DevToolsBlocker', 'AdBlockGuard', 'InitBlockGuard', 'checkDevTools', 'trip'];
+        
+        gates.forEach(g => {
+            try { window[g] = dummy; } catch(_) {}
+        });
+
+        // 차단 레이어가 뜰 때만 저격해서 지우기
+        const overlay = document.getElementById("ntk_devtools_overlay");
+        if (overlay) {
+            overlay.remove();
+            document.documentElement.style.setProperty("user-select", "auto", "important");
+            document.body.style.setProperty("overflow", "auto", "important");
+        }
+    };
+
+    // [패치 2] localStorage 카운트 마비
     try {
         const originalSetItem = localStorage.setItem;
         localStorage.setItem = function(key, value) {
@@ -39,41 +61,15 @@
         };
     } catch (_) {}
 
-    // [핵심 패치 2] 창을 덮어버리는 오버레이 레이어 및 스크롤 마비 실시간 강제 해제
-    const clearBypassGates = () => {
-        window.__ntk_ib_ok = 1;
-        window.__ntkDevtoolsPreflight = 1;
-        window.__ntkDevtoolsTripped = false;
-
-        const dummy = function() { return null; };
-        const gates = ['DevToolsBlockerGate', 'DevToolsBlocker', 'AdBlockGuard', 'InitBlockGuard', 'checkDevTools', 'trip'];
-        
-        gates.forEach(g => {
-            try { window[g] = dummy; } catch(_) {}
-        });
-
-        // 차단 레이어가 감지되면 흔적도 없이 삭제
-        const overlay = document.getElementById("ntk_devtools_overlay");
-        if (overlay) {
-            overlay.remove();
-            document.documentElement.style.setProperty("user-select", "auto", "important");
-            document.body.style.setProperty("overflow", "auto", "important");
-        }
-    };
-
-    // [핵심 패치 3] 구글로 주소창을 날려버리는 팅김 현상 완전 방어
+    // [패치 3] 튕김 방지
     try {
         const originalReplace = window.location.replace;
         window.location.replace = function(url) {
-            if (url.includes("google.com")) {
-                console.log("➔ 사이트의 강제 리디렉션을 방어했습니다.");
-                return null;
-            }
+            if (url.includes("google.com")) return null;
             return originalReplace.apply(this, arguments);
         };
     } catch(_) {}
 
-    // 실행단 가동
     clearBypassGates();
     const observer = new MutationObserver(() => clearBypassGates());
     
