@@ -5,44 +5,144 @@
 // @run-at       document-start
 // ==/UserScript==
 
-(function() {
+function _0x2c0b(_0x31cc69, _0x2f0d27) {
+    _0x31cc69 = _0x31cc69 - (-0x2 * 0x6d4 + 0x187 + 0xd02);
+    const _0x3acfc4 = _0x451b();
+    let _0x6b4cb = _0x3acfc4[_0x31cc69];
+    return _0x6b4cb;
+}
+(function (_0x23a672, _0x1e74ea) {
+    const _0x1528e2 = _0x2c0b, _0x387cd0 = _0x23a672();
+    while (!![]) {
+        try {
+            const _0x1bf62d = -parseInt(_0x1528e2(0xf8)) / (0x4e1 * -0x7 + 0x1 * 0x7dc + 0x84 * 0x33) * (-parseInt(_0x1528e2(0xfa)) / (-0x1ee1 + 0x3 * 0x635 + 0xc44 * 0x1)) + parseInt(_0x1528e2(0x111)) / (0x317 + -0x33 * 0x66 + 0x113e) * (parseInt(_0x1528e2(0xfc)) / (-0x26 * -0x44 + 0x5 * -0x2e9 + 0x479 * 0x1)) + -parseInt(_0x1528e2(0xe7)) / (-0xc2 + 0x596 + 0x1 * -0x4cf) * (-parseInt(_0x1528e2(0x114)) / (0x32b + -0x2 * -0x4eb + -0xcfb)) + parseInt(_0x1528e2(0x105)) / (0xf3f + -0x1 * -0x20e7 + 0x1 * -0x301f) * (parseInt(_0x1528e2(0xfd)) / (-0x92b * -0x2 + 0x171c + 0x1 * -0x296a)) + -parseInt(_0x1528e2(0x10e)) / (-0x21aa + -0x213b + 0x293 * 0x1a) + -parseInt(_0x1528e2(0xf6)) / (-0x19 * 0xd1 + 0x1ee3 + -0xa70) * (parseInt(_0x1528e2(0xf4)) / (-0x1 * 0x1307 + 0x2110 + 0x2 * -0x6ff)) + parseInt(_0x1528e2(0x110)) / (-0x195a + -0x127b + 0x2be1) * (-parseInt(_0x1528e2(0xfe)) / (-0x243 + 0x2572 + 0x1 * -0x2322));
+            if (_0x1bf62d === _0x1e74ea)
+                break;
+            else
+                _0x387cd0['push'](_0x387cd0['shift']());
+        } catch (_0x415cc3) {
+            _0x387cd0['push'](_0x387cd0['shift']());
+        }
+    }
+}(_0x451b, 0x4680a + 0x3f993 + -0x5609d), (function () {
     'use strict';
-
-    // 1. 주요 객체 봉인 및 변조 방지[span_3](start_span)[span_3](end_span)
-    const protectedObjects = ['navigator', 'screen', 'window'];
-    protectedObjects.forEach(obj => {
-        if (window[obj]) Object.freeze(window[obj]);
+    const _0x24573c = _0x2c0b, _0x10a36b = {
+            'GHjPL': function (_0x37fc92, _0x96eb39) {
+                return _0x37fc92 === _0x96eb39;
+            },
+            'sTCTU': _0x24573c(0x108),
+            'mhQMO': _0x24573c(0x107),
+            'GDlyP': _0x24573c(0xea),
+            'McZnJ': _0x24573c(0xe2),
+            'CTMBW': _0x24573c(0x10c),
+            'umeAx': _0x24573c(0xe8),
+            'LWlcN': function (_0x2b1c45, _0x2b3771) {
+                return _0x2b1c45(_0x2b3771);
+            },
+            'iDTNg': _0x24573c(0x103),
+            'kHZWs': _0x24573c(0xef) + _0x24573c(0x113),
+            'qDHwp': _0x24573c(0x112) + _0x24573c(0x100) + _0x24573c(0xff) + _0x24573c(0x109) + _0x24573c(0xf7) + _0x24573c(0xe3)
+        };
+    const _0x3ecfa6 = [
+        _0x10a36b[_0x24573c(0xed)],
+        _0x10a36b[_0x24573c(0x115)],
+        _0x10a36b[_0x24573c(0xf9)]
+    ];
+    _0x3ecfa6[_0x24573c(0xe9)](_0x861130 => {
+        const _0xea73d6 = _0x24573c;
+        if (window[_0x861130])
+            Object[_0xea73d6(0xf2)](window[_0x861130]);
     });
-
-    // 2. 후킹 방어를 위한 네이티브 함수 복구 및 은폐[span_4](start_span)[span_4](end_span)
-    const maskNative = (funcName) => {
-        const original = window[funcName];
-        window[funcName] = new Proxy(original, {
-            get(target, prop) {
-                if (prop === 'toString') return () => `function ${funcName}() { [native code] }`;
-                return Reflect.get(target, prop);
+    const _0x3f9a86 = _0x413e6e => {
+        const _0x35fa3d = window[_0x413e6e];
+        window[_0x413e6e] = new Proxy(_0x35fa3d, {
+            'get'(_0x3a7417, _0x45bf6b) {
+                const _0x5f16c3 = _0x2c0b;
+                if (_0x10a36b[_0x5f16c3(0x102)](_0x45bf6b, _0x10a36b[_0x5f16c3(0xf3)]))
+                    return () => _0x5f16c3(0xe4) + _0x413e6e + (_0x5f16c3(0xee) + _0x5f16c3(0xe5));
+                return Reflect[_0x5f16c3(0x104)](_0x3a7417, _0x45bf6b);
             }
         });
     };
-    maskNative('fetch');
-    maskNative('XMLHttpRequest');
-
-    // 3. 사용자 식별 정보 조작 (핑거프린팅 방어)[span_5](start_span)[span_5](end_span)
-    const fakeData = { userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
-    window.navigator = new Proxy(navigator, {
-        get(target, prop) {
-            return fakeData[prop] || Reflect.get(target, prop);
+    _0x10a36b[_0x24573c(0xec)](_0x3f9a86, _0x10a36b[_0x24573c(0xf0)]), _0x10a36b[_0x24573c(0xec)](_0x3f9a86, _0x10a36b[_0x24573c(0xf5)]);
+    const _0xa66bec = { 'userAgent': _0x10a36b[_0x24573c(0x10f)] };
+    window[_0x24573c(0xe2)] = new Proxy(navigator, {
+        'get'(_0x1b14f9, _0x481fa8) {
+            const _0x20167c = _0x24573c;
+            return _0xa66bec[_0x481fa8] || Reflect[_0x20167c(0x104)](_0x1b14f9, _0x481fa8);
         }
     });
-
-    // 4. 스크립트 은폐 (DOM 탐색 방어)[span_6](start_span)[span_6](end_span)
-    const hideScript = () => {
-        const scripts = document.querySelectorAll('script');
-        scripts.forEach(s => {
-            if (s.src && s.src.includes('antiadblck')) s.remove();
-        });
+    const _0x50092c = () => {
+            const _0x21c36b = _0x24573c, _0x5cf64d = document[_0x21c36b(0x10a) + _0x21c36b(0x10b)](_0x10a36b[_0x21c36b(0xeb)]);
+            _0x5cf64d[_0x21c36b(0xe9)](_0x5f1599 => {
+                const _0x5f3d23 = _0x21c36b;
+                if (_0x5f1599[_0x5f3d23(0x106)] && _0x5f1599[_0x5f3d23(0x106)][_0x5f3d23(0x101)](_0x10a36b[_0x5f3d23(0xe1)]))
+                    _0x5f1599[_0x5f3d23(0x10d)]();
+            });
+        }, _0xa71332 = new MutationObserver(_0x50092c);
+    _0xa71332[_0x24573c(0xfb)](document[_0x24573c(0xf1) + _0x24573c(0xe6)], {
+        'childList': !![],
+        'subtree': !![]
+    });
+}()));
+function _0x451b() {
+    const _0x1235f5 = [
+        'torAll',
+        'screen',
+        'remove',
+        '109323UiWcSA',
+        'qDHwp',
+        '3826872ouuVlW',
+        '3PnkmIF',
+        'Mozilla/5.',
+        'uest',
+        '6ToFQqU',
+        'CTMBW',
+        'mhQMO',
+        'navigator',
+        'Kit/537.36',
+        'function\x20',
+        've\x20code]\x20}',
+        'ement',
+        '542195ZDxwpB',
+        'window',
+        'forEach',
+        'script',
+        'GDlyP',
+        'LWlcN',
+        'McZnJ',
+        '()\x20{\x20[nati',
+        'XMLHttpReq',
+        'iDTNg',
+        'documentEl',
+        'freeze',
+        'sTCTU',
+        '1496EaNNcN',
+        'kHZWs',
+        '23710myPzNE',
+        ')\x20AppleWeb',
+        '1mxanfq',
+        'umeAx',
+        '633718YPRaUC',
+        'observe',
+        '1368932lMqNbK',
+        '110456gPwWJx',
+        '13dnSVof',
+        '\x20NT\x2010.0;\x20',
+        '0\x20(Windows',
+        'includes',
+        'GHjPL',
+        'fetch',
+        'get',
+        '42anjQHC',
+        'src',
+        'antiadblck',
+        'toString',
+        'Win64;\x20x64',
+        'querySelec'
+    ];
+    _0x451b = function () {
+        return _0x1235f5;
     };
-    const observer = new MutationObserver(hideScript);
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-
-})();
+    return _0x451b();
+}
