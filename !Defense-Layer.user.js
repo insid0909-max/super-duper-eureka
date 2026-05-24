@@ -1,44 +1,48 @@
 // ==UserScript==
-// @name         !0_Defense_Layer_Integrated
-// @version      2.0.0
-// @description  환경 고정, 정보 유출 방어 및 스크립트 존재 은폐
+// @name         !0_Defense_Layer_Advanced
+// @version      3.0.0
+// @description  환경 고정, 정보 유출 방어, 스크립트 존재 은폐 및 패턴 난독화 준비
 // @run-at       document-start
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    // 1. 객체 잠금: 사이트가 사용자 환경을 변조하지 못하도록 보호[span_2](start_span)[span_2](end_span)
-    Object.freeze(navigator);
-    Object.freeze(window.screen);
+    // 1. 주요 객체 봉인 및 변조 방지[span_3](start_span)[span_3](end_span)
+    const protectedObjects = ['navigator', 'screen', 'window'];
+    protectedObjects.forEach(obj => {
+        if (window[obj]) Object.freeze(window[obj]);
+    });
 
-    // 2. 네이티브 함수 마스킹: 후킹 흔적을 은폐하여 사이트의 검사 무력화[span_3](start_span)[span_3](end_span)
-    const originalToString = Function.prototype.toString;
-    Function.prototype.toString = function() {
-        if (this.name === 'fetch' || this.name === 'XMLHttpRequest' || this.name === 'querySelector') {
-            return `function ${this.name}() { [native code] }`;
-        }
-        return originalToString.apply(this, arguments);
-    };
-
-    // 3. 역정보 주입 (Honeypot): 유출 시도 시 가짜 정보를 전달하여 추적 무력화[span_4](start_span)[span_4](end_span)
-    const handler = {
-        get(target, prop) {
-            if (prop === 'userAgent') {
-                return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
+    // 2. 후킹 방어를 위한 네이티브 함수 복구 및 은폐[span_4](start_span)[span_4](end_span)
+    const maskNative = (funcName) => {
+        const original = window[funcName];
+        window[funcName] = new Proxy(original, {
+            get(target, prop) {
+                if (prop === 'toString') return () => `function ${funcName}() { [native code] }`;
+                return Reflect.get(target, prop);
             }
-            return Reflect.get(target, prop);
-        }
+        });
     };
-    window.navigator = new Proxy(navigator, handler);
+    maskNative('fetch');
+    maskNative('XMLHttpRequest');
 
-    // 4. 스크립트 존재 은폐: 사이트 측이 설치된 스크립트를 탐색하지 못하게 함[span_5](start_span)[span_5](end_span)
-    const originalQuery = document.querySelector;
-    document.querySelector = function(selector) {
-        if (selector && typeof selector === 'string' && selector.includes('antiadblck')) {
-            return null; // 탐지 시도 시 스크립트가 없는 것처럼 처리[span_6](start_span)[span_6](end_span)
+    // 3. 사용자 식별 정보 조작 (핑거프린팅 방어)[span_5](start_span)[span_5](end_span)
+    const fakeData = { userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" };
+    window.navigator = new Proxy(navigator, {
+        get(target, prop) {
+            return fakeData[prop] || Reflect.get(target, prop);
         }
-        return originalQuery.apply(this, arguments);
+    });
+
+    // 4. 스크립트 은폐 (DOM 탐색 방어)[span_6](start_span)[span_6](end_span)
+    const hideScript = () => {
+        const scripts = document.querySelectorAll('script');
+        scripts.forEach(s => {
+            if (s.src && s.src.includes('antiadblck')) s.remove();
+        });
     };
+    const observer = new MutationObserver(hideScript);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
 
 })();
