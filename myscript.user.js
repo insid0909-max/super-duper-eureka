@@ -1,35 +1,105 @@
 // ==UserScript==
-// @name         Anti-DevTools-Blocker Killer (Universal)
-// @namespace    http://tampermonkey.net/
+// @name         Google SafeSearch Disabler
+// @namespace    https://www.google.com/
 // @version      1.0
-// @description  도메인 변경 대응 - 무한 디버거 및 포맷터 감지 영구 무력화
-// @author       
-// @match        *://*/*
-// @run-at       document-start
+// @description  구글 세이프서치(성인 콘텐츠 필터)를 자동으로 해제합니다
+// @author       Custom
+// @match        https://www.google.com/*
+// @match        https://www.google.co.kr/*
 // @grant        none
+// @run-at       document-start
 // ==/UserScript==
 
-(function() {
-    'use strict';
+(function () {
+  'use strict';
 
-    // 1. (function(){}).constructor("debugger")() 우회
-    const FunctionPrototypeConstructor = Function.prototype.constructor;
-    Function.prototype.constructor = function(...args) {
-        if (args.length > 0 && typeof args[0] === 'string' && args[0].includes('debugger')) {
-            // 디버거 유발 코드가 감지되면 빈 함수를 반환해 무력화
-            return function() {};
+  // URL에서 세이프서치 파라미터 제거/변경
+  function disableSafeSearch() {
+    const url = new URL(location.href);
+
+    // safe=active 또는 safe=strict → safe=off 로 변경
+    if (url.searchParams.get('safe') !== 'off') {
+      url.searchParams.set('safe', 'off');
+      // 히스토리 변경 (페이지 리로드 없이)
+      history.replaceState(null, '', url.toString());
+    }
+  }
+
+  // 검색 폼 submit 시 safe=off 강제 삽입
+  function patchSearchForms() {
+    document.querySelectorAll('form').forEach((form) => {
+      if (form.dataset.safePatched) return;
+      form.dataset.safePatched = 'true';
+
+      form.addEventListener('submit', () => {
+        let safeInput = form.querySelector('input[name="safe"]');
+        if (!safeInput) {
+          safeInput = document.createElement('input');
+          safeInput.type = 'hidden';
+          safeInput.name = 'safe';
+          form.appendChild(safeInput);
         }
-        return FunctionPrototypeConstructor.apply(this, args);
-    };
-
-    // 2. devtoolsFormatters를 이용한 콘솔 감지 방어
-    Object.defineProperty(window, 'devtoolsFormatters', {
-        get: function() { return []; },
-        set: function(val) { /* 사이트가 감지용 포맷터를 심으려고 하면 무시 */ },
-        configurable: false
+        safeInput.value = 'off';
+      });
     });
+  }
 
-    // 3. 우클릭 및 단축키 해제 (캡처 및 이벤트 가로채기 방지)
-    window.addEventListener('keydown', function(e) { e.stopPropagation(); }, true);
-    window.addEventListener('contextmenu', function(e) { e.stopPropagation(); }, true);
+  // 링크에 safe=off 파라미터 추가
+  function patchLinks() {
+    document.querySelectorAll('a[href*="google"]').forEach((a) => {
+      try {
+        const url = new URL(a.href);
+        if (url.searchParams.has('q')) {
+          url.searchParams.set('safe', 'off');
+          a.href = url.toString();
+        }
+      } catch (_) {}
+    });
+  }
+
+  // 초기 실행
+  disableSafeSearch();
+
+  // DOM 로드 후 실행
+  document.addEventListener('DOMContentLoaded', () => {
+    patchSearchForms();
+    patchLinks();
+  });
+
+  // 동적으로 추가되는 요소 감시 (SPA 대응)
+  const observer = new MutationObserver(() => {
+    patchSearchForms();
+    patchLinks();
+  });
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+
+  // pushState / replaceState 후에도 URL 파라미터 유지
+  const _pushState = history.pushState.bind(history);
+  const _replaceState = history.replaceState.bind(history);
+
+  history.pushState = function (state, title, url) {
+    if (url) {
+      try {
+        const u = new URL(url, location.origin);
+        if (u.searchParams.has('q')) u.searchParams.set('safe', 'off');
+        url = u.toString();
+      } catch (_) {}
+    }
+    return _pushState(state, title, url);
+  };
+
+  history.replaceState = function (state, title, url) {
+    if (url) {
+      try {
+        const u = new URL(url, location.origin);
+        if (u.searchParams.has('q')) u.searchParams.set('safe', 'off');
+        url = u.toString();
+      } catch (_) {}
+    }
+    return _replaceState(state, title, url);
+  };
 })();
